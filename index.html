@@ -211,6 +211,35 @@ footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;col
 .sublist li{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:2px 0;border:none!important}
 .sublist li span:last-child{white-space:nowrap;font-weight:700}
 @media (max-width:420px){ .num{width:58px;padding:0 5px} .ctrl{gap:6px} .ctrl.sm .num{width:54px} }
+
+header .btn.grokbtn{background:#ffd54f;border-color:#ffd54f;color:#1a2a44;font-weight:800}
+header .btn.grokbtn:hover{background:#ffe082}
+.grokcard{background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:12px 14px;margin:14px 0}
+.grokcard p{margin:6px 0 10px;font-size:14px}
+.modal.grok .box{max-width:760px;padding:0;display:flex;flex-direction:column}
+.gm-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:1;border-radius:16px 16px 0 0}
+.gm-head h2{margin:0;font-size:20px;flex:1}
+.gm-x{border:none;background:#eef2f7;border-radius:50%;width:34px;height:34px;font-size:22px;line-height:1;flex:none}
+#grokBody{padding:4px 16px 8px;font-size:14.5px}
+#grokBody h3{margin:16px 0 6px;font-size:16px}
+#grokBody .lead{color:var(--muted);margin:10px 0}
+#grokBody ul.pr{margin:0;padding-left:20px}
+#grokBody ul.pr li{margin:4px 0}
+.gm-list{list-style:none;margin:0;padding:0}
+.gm-list li{padding:8px 0;border-bottom:1px solid var(--line)}
+.gm-list .r1{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.gm-list .r1 span:last-child{white-space:nowrap;color:#1b7a47}
+.gm-list .r2{font-size:13px;color:var(--muted);margin-top:2px}
+.gm-sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.gm-sum>div{background:#f4f7fb;border-radius:10px;padding:8px 10px}
+.gm-sum .k{font-size:12px;color:var(--muted);margin:0;line-height:1.3}
+.gm-sum .v{font-weight:800;font-size:16px;margin:2px 0 0;line-height:1.3}
+.gm-note{background:#fff3e0;border-radius:10px;padding:10px 12px;font-size:13.5px;color:#5a3a00;margin:12px 0 4px}
+.gm-note p{margin:4px 0}
+.gm-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid var(--line);position:sticky;bottom:0;background:#fff;border-radius:0 0 16px 16px}
+.btn.primary{background:var(--brand2);border-color:var(--brand2);color:#fff}
+.btn.primary:hover{background:#1d4f91}
+@media (max-width:520px){ .modal.grok{padding:0;align-items:stretch} .modal.grok .box{max-height:100vh;height:100%;border-radius:0} .gm-head,.gm-actions{border-radius:0} .gm-actions .btn{flex:1 1 auto} .gm-sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
 </style>
 </head>
 <body>
@@ -223,6 +252,7 @@ footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;col
     <div class="hbtns">
       <button class="btn" id="shareBtn" type="button">Jaa tulos</button>
       <button class="btn" id="resetBtn" type="button">Aloita alusta</button>
+      <button class="btn grokbtn" id="grokBtn" type="button" aria-haspopup="dialog">✨ Grokin valinta</button>
     </div>
   </div>
 </header>
@@ -326,6 +356,7 @@ footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;col
           <li>Päämittari näyttää budjetin tasapainon: vasemmalla alijäämä (lähtötilanne −9,37 mrd €, katkoviiva), keskellä <b>Tasapaino 0</b> ja oikealla ylijäämä. Vihreä raidoitettu alue on Velkajarru-tavoite, eli 8–11 mrd €:n säästöillä tasapaino on noin −1,37 … +1,63 mrd €. Asteikko laajenee automaattisesti suurilla muutoksilla, ja nuoli ◀/▶ kertoo, jos arvo menee asteikon ulkopuolelle.</li>
           <li>Pikavalinnat lisäävät valmiin muutoksen nykyisten valintojesi päälle; uusi napautus poistaa sen. Valintasi tallentuvat selaimeesi automaattisesti. ”Jaa tulos” kopioi yhteenvedon, ”Aloita alusta” nollaa kaiken.</li>
         </ol>
+        <div class="grokcard"><h3 style="margin-top:0">✨ Grokin valinta</h3><p>Grokin esimerkkipaketti (noin 9,4 mrd €) yhdistää maltillisia menosäästöjä moneen kohteeseen ja tulojen lisäyksiä kasvulle vähemmän haitallisista veropohjista. Voit lukea perustelut ja ottaa paketin käyttöön, minkä jälkeen voit jatkaa säätämistä.</p><button class="btn" id="grokInfoBtn" type="button">Lue Grokin valinnan perustelut</button></div>
         <h3>Oletukset ja rajoitukset</h3>
         <ul class="src">
           <li>Luvut ovat <b>eduskunnan hyväksymästä valtion talousarviosta vuodelle 2026</b> (Suomen säädöskokoelma 1329/2025, julkaistu 23.12.2025). Alakohdat on poimittu samasta asiakirjasta momentti- tai lukutasolla. Vuoden 2026 I lisätalousarvioesitys nostaisi nettolainanoton arviota noin 10,8 mrd euroon; peli käyttää varsinaista talousarviota.</li>
@@ -335,7 +366,7 @@ footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;col
           <li>Monet menot ovat lakisääteisiä tai sopimusperusteisia (esim. eläkkeet, Kela-etuudet, hyvinvointialueiden rahoitus, EU-maksut, valtionvelan korot). Niitäkin voi pelissä säätää, mutta muutettaessa näytetään varoitus: todellisuudessa ne vaatisivat lakimuutoksia tai eivät ole talousarviossa päätettävissä.</li>
           <li>Osinko- ja osakemyyntitulojen lisäys katsotaan kertaluonteiseksi osakemyynniksi, eikä se korjaa rakenteellista alijäämää.</li>
           <li>*Korkosäästö: jos velanotto pienenee, tulevat korkomenot pienenevät. Arvio olettaa 3 %:n keskikoron.</li>
-          <li>Peli on puolueeton harjoitus: se ei suosittele mitään toimia. Kuvaukset vaikutuksista ovat yleisluontoisia.</li>
+          <li>Peli on puolueeton harjoitus, eikä se suosittele mitään toimia. ”Grokin valinta” on Grokin oma, perusteltu esimerkki, ei ainoa oikea ratkaisu. Kuvaukset vaikutuksista ovat yleisluontoisia.</li>
         </ul>
         <h3>Lähteet</h3>
         <ol class="src" id="sources"></ol>
@@ -354,6 +385,17 @@ footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;col
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
       <button class="btn" id="copyBtn" type="button">Kopioi</button>
       <button class="btn" id="closeModal" type="button">Sulje</button>
+    </div>
+  </div>
+</div>
+<div class="modal grok" id="grokModal" hidden role="dialog" aria-modal="true" aria-labelledby="grokTitle">
+  <div class="box">
+    <div class="gm-head"><h2 id="grokTitle">Grokin valinta</h2><button class="gm-x" id="grokClose" type="button" aria-label="Sulje">×</button></div>
+    <div id="grokBody"></div>
+    <div class="gm-actions">
+      <button class="btn primary" id="grokApply" type="button">Ota Grokin valinta käyttöön</button>
+      <button class="btn" id="grokEffects" type="button">Näytä vaikutukset</button>
+      <button class="btn" id="grokClose2" type="button">Sulje ja jatka säätämistä</button>
     </div>
   </div>
 </div>
@@ -799,6 +841,86 @@ let rT=null; window.addEventListener("resize",()=>{ clearTimeout(rT); rT=setTime
 /* ====== KÄYNNISTYS ====== */
 load(); buildList("e",$("#expList"),GROUPS); buildList("r",$("#revList"),REVG); buildLegends(); buildPresets(); buildSources(); update();
 window.__budjetti={totals,getState:()=>state,EXP,REV,LINE,LEAF,setLeaf,setLine,lineVal,lineEff,leafEff,update,togglePreset,PRESETS,VMIN,VMAX};
+/* ====== GROKIN VALINTA ====== */
+const GROK = {
+  principles:[
+    "Sopeutus noin 9,4 mrd €, eli Velkajarru-tavoitealueen (8–11 mrd €) keskivaiheilla. Mukana on vain pysyviä (rakenteellisia) toimia, ei kertaluonteisia osakemyyntejä.",
+    "Säästöt hajautetaan monelle riville maltillisina, sen sijaan että yksi kohde ajettaisiin alas. Suurimmissa erissä muutokset ovat pieniä ja vaiheittaisia.",
+    "Tulopuolella käytetään ensin kasvulle vähiten haitallisia veropohjia: kulutusta, haittoja, ympäristöä, ajoneuvoja ja perintöjä sekä verotukien karsintaa. Työn ja yritysten verotusta ei kiristetä veroasteikoilla.",
+    "Yritys- ja energiatukia karsitaan, erityisesti ympäristölle haitallisia. Tutkimus-, kehitys- ja innovaatiotuki säilyy.",
+    "Kasvua tukevat menot suojataan: varhaiskasvatus, perus- ja toisen asteen koulutus, yliopistot, ammattikorkeakoulut ja tutkimus.",
+    "Pienituloisimpia suojataan: toimeentulotukeen, työttömyyden perusturvaan, kansaneläkkeeseen ja takuueläkkeeseen ei kosketa. Puolustusta (Nato-sitoumukset), valtionvelan korkoja ja EU-maksuja ei leikata.",
+  ],
+  m:[
+    {k:"e", t:"Hyvinvointialueet: tuottavuus ja menojen kasvun hillintä (−6 %)", why:"Suurin menoerä. Pieni prosentuaalinen tehostus usean vuoden aikana (tuottavuus, palveluverkko, digitalisaatio, palvelulupausten tarkistus) säästää paljon ilman yksittäisen palvelun alasajoa.", set:[["hva:28.89.31",-6]]},
+    {k:"e", t:"Kuntien valtionosuudet (−10 %) ja veroperustemuutosten korvaukset (−20 %)", why:"Maltillinen leikkaus. Kunnilla on oma verotusoikeus ja tehostamisvaraa; koulutuksen valtionosuudet (OKM) jätetään ennalleen.", set:[["kunnat:28.90.30",-10],["kunnat:28.90.35",-20]]},
+    {k:"e", t:"Valtion eläkkeet: indeksikorotusten hillintä (−4 %)", why:"Pieni, indeksijäädytyksen kaltainen hillintä jaetaan laajalle, eikä kenenkään eläkettä leikata merkittävästi.", set:[["vkel:28.50.15",-4],["vkel:28.50.63",-4]]},
+    {k:"e", t:"Yrittäjien eläkkeet: YEL- ja MYEL-maksujen asteittainen korotus", why:"Valtio rahoittaa yrittäjien eläkkeistä suuren osan. Maksujen nosto lähemmäs palkansaajien tasoa pienentää valtion osuutta (YEL −10 %, MYEL −5 %).", set:[["elakkeet:33.40.52",-10],["elakkeet:33.40.51",-5]]},
+    {k:"e", t:"Yritys- ja energiatukien karsinta", why:"OECD ja VATT ovat suositelleet tukien karsimista. Energiatuki −70 %, sähköistämistuki −50 %, uusiutuvan tuotantotuki −10 %, laivanrakennustuki −50 %, merenkulun tuki −30 %, T&K-lainat −20 %, Teollisuussijoituksen pääomitus −50 % ja vientiluottojen korkotuki −20 %. T&K&I-avustukset (Business Finland) säilyvät.", set:[["yritystuet:32.20.41",-70],["yritystuet:32.20.43",-50],["yritystuet:32.20.48",-10],["yritystuet:32.20.46",-50],["yritystuet:32.20.83",-20],["joukko:31.20.43",-30],["tem:32.40.88",-50],["tem:32.40.48",-20]]},
+    {k:"e", t:"Maataloustuet ja maaseudun kehittäminen", why:"Kansallinen tuki −20 %, luonnonhaittakorvaus −10 % ja maaseudun kehittäminen −10 %. EU-tulotuet ja ympäristökorvaukset säilyvät.", set:[["maatalous:30.20.40",-20],["maatalous:30.20.44",-10],["mmm:30.10",-10]]},
+    {k:"e", t:"Valtionhallinnon tuottavuusohjelma (−3…−10 %)", why:"Ministeriöiden ja virastojen toimintamenoja tehostetaan laajasti. Tuomioistuimet, poliisi, rajavartiolaitos, vankilat ja pelastustoimi rajataan ulkopuolelle.", set:[["ylin:23",-5],["ylin:21",-3],["um:24.01",-4],["um:24.90",-5],["om:25.01",-4],["sm:26.01",-4],["sm:26.40",-5],["vm:28.01",-5],["vm:28.10",-3],["vm:28.40",-5],["vm:28.70",-10],["lvm:31.01.02",-5],["lvm:31.01.03",-5],["mmm:30.01",-5],["stm:33.01",-5],["ym:35.01",-5],["okm:29.01",-5],["tem:32.01.01",-5],["tem:32.01.02",-5],["tem:32.01.05",-5]]},
+    {k:"e", t:"Kehitysyhteistyö: maltillinen leikkaus, Ukrainan tuki säilyy", why:"Varsinainen kehitysyhteistyö −15 % ja kehityspoliittiset lainat ja sijoitukset −20 %. Ukrainan tuki (24.30.69) pidetään ennallaan, ja leikkaus voidaan kohdentaa niin, että humanitaarinen apu säilyy.", set:[["kehy:24.30.66",-15],["kehy:24.30.89",-20]]},
+    {k:"e", t:"Sosiaaliturva, ei kuitenkaan perusturvaa", why:"Perhe-etuudet −7 % (esim. lapsilisien indeksijäädytys), asumistuki −5 %, ansiopäivärahojen valtionosuus −15 % (työllisyyttä tukeva porrastus) ja Kelan toimintakulut −5 %. Toimeentulotuki ja työttömyyden perusturva säilyvät.", set:[["kelaet:33.10.50",-7],["kelaet:33.10.54",-5],["kelaet:33.10.60",-5],["tyottomyys:33.20.50",-15]]},
+    {k:"e", t:"Sairausvakuutuksen korvaukset (−12 %)", why:"Lääke- ja matkakorvausten uudistus sekä yksityisen hoidon Kela-korvausten tarkistus. Hoito järjestetään jatkossakin hyvinvointialueilla.", set:[["sairaus:33.30.60",-12]]},
+    {k:"e", t:"Opintoraha: painotus opintolainaan (−15 %)", why:"Opintotukea siirretään osin lainapainotteiseksi. Koulutuksen ja korkeakoulujen rahoitus säilyy.", set:[["opintotuki:29.70.55",-15]]},
+    {k:"e", t:"Sote-avustukset, lomitus ja järjestöavustukset", why:"Harkinnanvaraisia avustuksia karsitaan maltillisesti: sote-tuet −10 %, lomitus −15 % ja järjestöavustukset −10 %.", set:[["stm:33.60",-10],["stm:33.80",-15],["jarjestot",-10]]},
+    {k:"e", t:"Väyläverkon kehittäminen (−25 %)", why:"Uusia hankkeita priorisoidaan hyöty-kustannussuhteen mukaan. Perusväylänpito (korjausvelka) säilyy.", set:[["vaylat:31.10.77",-25]]},
+    {k:"e", t:"Kulttuuri, Yle, liikunta ja nuorisotyö (−3…−5 %)", why:"Pieni, tasainen osuus samasta yhteisestä sopeutuksesta.", set:[["yle",-5],["kulttuuri",-5],["okm:29.90",-5],["okm:29.91",-3]]},
+    {k:"e", t:"Asumisen ja rakentamisen tuet (−15 %)", why:"Asuntotuotannon ja yhdyskuntien harkinnanvaraisia tukia karsitaan.", set:[["ym:35.20",-15]]},
+    {k:"r", t:"Arvonlisävero: alennettujen kantojen kaventaminen ja yleinen kanta +1 %-yks.", why:"Kulutusverot ovat kasvulle vähiten haitallisia, ja alennetut kannat ovat taloustieteellisten arvioiden mukaan tehoton tapa tukea pienituloisia. Tuotto +9 % ≈ yleinen kanta +1 %-yks. (≈ 640 M€) ja alennettujen kantojen nosto noin 4–5 %-yks. (≈ 1,4 mrd €).", set:[["alv",9]]},
+    {k:"r", t:"Ympäristölle haitallisten energiaverotukien karsinta", why:"Fossiilisten polttoaineiden verohuojennuksia puretaan (esim. dieselin ja kevyen polttoöljyn alempi vero, energiaintensiivisten palautukset). Energiaverojen tuotto +30 %.", set:[["valm:11.08.07",30]]},
+    {k:"r", t:"Haittaverot: tupakka, alkoholi ja virvoitusjuomat", why:"Haittaverot ohjaavat kulutusta ja tuottavat vähällä kasvuhaitalla: tupakka +15 %, alkoholi +12 % ja virvoitusjuomat +25 %. Matkustajatuonti voi pienentää tuottoa.", set:[["valm:11.08.01",15],["valm:11.08.04",12],["valm:11.08.05",25]]},
+    {k:"r", t:"Ajoneuvovero (+25 %)", why:"Päästöperusteinen ajoneuvovero on liikkumattoman omaisuuden kaltainen, vähän kasvua haittaava veropohja.", set:[["muutverot:11.10.07",25]]},
+    {k:"r", t:"Perintö- ja lahjavero (+25 %)", why:"Varallisuuden siirtoihin kohdistuvia veroja pidetään kasvun kannalta vähemmän haitallisina kuin työn verotusta.", set:[["muutulo:11.01.04",25]]},
+    {k:"r", t:"Verotukien karsinta tuloverotuksessa ja pääomatulot", why:"Tuloverotuksen vähennyksiä ja huojennuksia karsitaan (tuotto +3 % ≈ 0,8 mrd €, eli tuotoltaan noin 0,7 %-yks. asteikkomuutoksen verran) ja korkotulojen lähdeveroa korotetaan (+10 %). Ansiotuloveroasteikkoon ei kosketa.", set:[["ansio",3],["muutulo:11.01.03",10]]},
+    {k:"r", t:"Vakuutusmaksu- ja arpajaisvero", why:"Veropohjan laajennus kulutusluonteisissa veroissa: vakuutusmaksuvero +15 % ja arpajaisvero +10 %.", set:[["vakuutus:11.04.02",15],["muutverot:11.10.06",10]]}
+  ]
+};
+function grokLeaves(m){ const out=[]; m.set.forEach(([id,v])=>{ if(LEAF[m.k][id]) out.push([LEAF[m.k][id],v]); else leaves(LINE[m.k][id]).forEach(x=>out.push([x,v])); }); return out; }
+function grokEff(m){ return grokLeaves(m).reduce((s,[x,v])=>s+(m.k==="e"? -1 : 1)*x.b*v/100,0); }
+function grokTarget(){ const t={e:{},r:{}}; GROK.m.forEach(m=>grokLeaves(m).forEach(([x,v])=>{ t[m.k][x.id]=v; })); return t; }
+function grokApplied(){ const t=grokTarget(); if(Object.keys(state.p).length) return false;
+  for(const k of ["e","r"]){ const a=state[k], b=t[k]; const ka=Object.keys(a), kb=Object.keys(b); if(ka.length!==kb.length) return false; if(kb.some(id=>a[id]!==b[id])) return false; } return true; }
+function hasChanges(){ return Object.keys(state.e).length+Object.keys(state.r).length>0; }
+function grokSums(){ let es=0, ra=0; GROK.m.forEach(m=>{ const v=grokEff(m); if(m.k==="e") es+=v; else ra+=v; }); return {es,ra,tot:es+ra}; }
+function applyGrok(){ const t=grokTarget(); state={e:{},r:{},p:{}}; for(const k of ["e","r"]) for(const id in t[k]) setLeaf(k,id,t[k][id]); update(); }
+function renderGrok(){
+  const S=grokSums(), bal=-(BASE_DEF-S.tot);
+  $("#grokTitle").textContent=`Grokin valinta: n. ${nf1.format(S.tot/1000)} mrd €`;
+  const li=m=>`<li><div class="r1"><span>${esc(m.t)}</span><span>${sfmt(grokEff(m))}</span></div><div class="r2">${esc(m.why)}</div></li>`;
+  const ex=GROK.m.filter(m=>m.k==="e"), rv=GROK.m.filter(m=>m.k==="r");
+  $("#grokBody").innerHTML=`
+   <p class="lead">Tämä on <b>Grokin esimerkki</b> siitä, miten Velkajarru voitaisiin saavuttaa pysyvillä toimilla. Se on yksi mahdollinen tapa, ei ainoa oikea. Kun paketti on käytössä, voit jatkaa säätämistä vapaasti.</p>
+   <div class="gm-sum">
+     <div><div class="k">Sopeutus yhteensä</div><div class="v">${sfmt(S.tot)}</div></div>
+     <div><div class="k">Budjetin tasapaino</div><div class="v">${fmt(-BASE_DEF)} → ${bal<0?"alijäämä "+fmt(-bal):"ylijäämä "+fmt(bal)}</div></div>
+     <div><div class="k">Menosäästöt</div><div class="v">${sfmt(S.es)} <span style="white-space:nowrap">(${nf0.format(S.es/S.tot*100)} %)</span></div></div>
+     <div><div class="k">Tulojen lisäys</div><div class="v">${sfmt(S.ra)} <span style="white-space:nowrap">(${nf0.format(S.ra/S.tot*100)} %)</span></div></div>
+   </div>
+   <h3>Periaatteet</h3><ul class="pr">${GROK.principles.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+   <h3>Menot: ${sfmt(S.es)}</h3><ul class="gm-list">${ex.map(li).join("")}</ul>
+   <h3>Tulot ja verot: ${sfmt(S.ra)}</h3><ul class="gm-list">${rv.map(li).join("")}</ul>
+   <div class="gm-note">
+     <p><b>Rehellisesti sanottuna:</b> tämä on yksi esimerkki. Sopeutuksen kohdentaminen on aina arvovalinta: joku painottaisi enemmän menoleikkauksia, joku veroja, joku eri kohteita.</p>
+     <p>Luvut ovat staattisia arvioita. Käyttäytymis- ja kasvuvaikutuksia ei ole huomioitu: veronkorotusten todellinen tuotto voi jäädä pienemmäksi, ja leikkaukset voivat lyhyellä aikavälillä heikentää kysyntää. Monet toimet vaatisivat lakimuutoksia, ja ne toteutettaisiin vaiheittain usean vuoden aikana.</p>
+     <p>Menojen osuudeksi jäi noin ${nf0.format(S.es/S.tot*100)} %, vaikka tavoitteena oli yli puolet. Suojatut erät muodostavat valtaosan menoista: perusturva, koulutus ja tutkimus, puolustus, korot, EU-maksut ja eläkkeiden ydin. Lisäksi hyvinvointialueiden säästö pidettiin maltillisena. Osa tulopuolen toimista (energiaverotukien, alennettujen ALV-kantojen ja tuloverovähennysten karsinta) on luonteeltaan tukien karsintaa verotuksen kautta.</p>
+   </div>`;
+  const ap=grokApplied(); const b=$("#grokApply"); b.hidden=ap; $("#grokEffects").hidden=!ap;
+}
+function openGrok(){ renderGrok(); $("#grokModal").hidden=false; $("#grokModal .box").scrollTop=0; setTimeout(()=>$("#grokClose").focus(),0); }
+function closeGrok(){ $("#grokModal").hidden=true; }
+function useGrok(){
+  if(hasChanges() && !grokApplied() && !confirm("Grokin valinta korvaa nykyiset valintasi. Jatketaanko?")) return false;
+  applyGrok(); toast("Grokin valinta otettu käyttöön"); return true;
+}
+$("#grokBtn").addEventListener("click",()=>{ if(useGrok()) openGrok(); });
+$("#grokInfoBtn").addEventListener("click",openGrok);
+$("#grokApply").addEventListener("click",()=>{ if(useGrok()) renderGrok(); });
+$("#grokEffects").addEventListener("click",()=>{ closeGrok(); showTab("vaik"); const m=window.innerWidth<960? $("#meter").offsetHeight:0; window.scrollTo({top:$("#p-vaik").getBoundingClientRect().top+scrollY-m-70,behavior:"smooth"}); });
+$("#grokClose").addEventListener("click",closeGrok); $("#grokClose2").addEventListener("click",closeGrok);
+$("#grokModal").addEventListener("click",e=>{ if(e.target.id==="grokModal") closeGrok(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("#grokModal").hidden) closeGrok(); });
+Object.assign(window.__budjetti,{GROK,grokSums,grokApplied,applyGrok});
 </script>
 </body>
 </html>
