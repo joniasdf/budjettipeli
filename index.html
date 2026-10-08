@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2a4a">
+<title>Budjettipeli – valtion talousarvio 2026</title>
+<style>
+:root{
+  --bg:#f3f5f9; --card:#fff; --ink:#14213d; --muted:#5b6478; --line:#e3e7ef;
+  --brand:#0f2a4a; --brand2:#1d4e89; --good:#1b9e5a; --warn:#e08a00; --bad:#c62828; --over:#7b3fb3;
+  --radius:14px; --shadow:0 2px 10px rgba(16,32,64,.07);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4;font-size:15px}
+button{font:inherit;color:inherit;cursor:pointer}
+header.top{background:linear-gradient(120deg,#0f2a4a,#1d4e89 70%,#2a6fb5);color:#fff;padding:18px 16px 16px}
+header.top .wrap{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end;justify-content:space-between}
+header.top h1{margin:0;font-size:28px;letter-spacing:.3px}
+header.top h1 span{display:inline-block;background:#fff;color:var(--brand);border-radius:8px;padding:0 8px;margin-right:6px;font-size:22px;vertical-align:3px}
+header.top p{margin:4px 0 0;opacity:.9;max-width:720px}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600;font-size:14px}
+.btn:hover{background:#f0f3f8}
+header .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff}
+header .btn:hover{background:rgba(255,255,255,.22)}
+.layout{max-width:1280px;margin:0 auto;padding:14px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}
+.side{position:sticky;top:12px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 24px);overflow:auto;padding-bottom:4px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+.card h2{font-size:16px;margin:0 0 10px}
+.card h3{font-size:14px;margin:14px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.meter .label{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.meter .big{font-size:34px;font-weight:800;line-height:1.1;margin:2px 0 4px;font-variant-numeric:tabular-nums}
+.meter .big small{font-size:15px;color:var(--muted);font-weight:600}
+.track{position:relative;height:26px;border-radius:13px;background:#e8ecf3;overflow:hidden;margin:8px 0 2px}
+.zone{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,rgba(27,158,90,.18) 0 8px,rgba(27,158,90,.30) 8px 16px);border-left:2px solid var(--good);border-right:2px solid var(--good)}
+.zone b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;color:#0d5c33;white-space:nowrap}
+.fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--warn);border-radius:13px;transition:width .25s,background .25s;opacity:.85}
+.ticks{position:relative;height:16px;font-size:11px;color:var(--muted)}
+.ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.ticks span:last-child{transform:translateX(-100%)}
+.status{margin-top:8px;padding:9px 11px;border-radius:10px;background:#fff6e5;color:#7a4b00;font-weight:600;font-size:14px}
+.status.win{background:#e3f6ec;color:#0d5c33}
+.status.over{background:#f1e8fa;color:#4f2178}
+.status.neg{background:#fde8e8;color:#8e1b1b}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.kpi{background:#f6f8fb;border-radius:10px;padding:8px 10px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font-weight:700;font-variant-numeric:tabular-nums}
+.oneoff{font-size:12.5px;color:#8e1b1b;margin-top:8px}
+.bal-row{margin:6px 0 12px}
+.bal-row .t{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:4px}
+.bal-row .t b{font-variant-numeric:tabular-nums;text-align:right}
+.bar{position:relative;height:30px;border-radius:8px;background:#eef1f6;display:flex;overflow:hidden}
+.bar .seg{height:100%;transition:width .25s;min-width:0;flex:none}
+.bar .ghost{position:absolute;top:0;bottom:0;border-right:3px dashed #14213d;pointer-events:none}
+.hatch{background:repeating-linear-gradient(45deg,#c62828 0 6px,#ef9a9a 6px 12px)!important}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;position:sticky;top:0;z-index:5;background:var(--bg)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;white-space:nowrap;font-size:14px}
+.tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.panel[hidden]{display:none}
+.intro{font-size:14px;color:var(--muted);margin:0 0 10px}
+.tm{position:relative;width:100%;border-radius:10px;overflow:hidden;background:#dde3ec}
+.tile{position:absolute;border:1px solid rgba(255,255,255,.9);overflow:hidden;color:#fff;padding:4px 5px;font-size:11.5px;line-height:1.15;cursor:pointer;transition:filter .15s}
+.tile:hover{filter:brightness(1.08)}
+.tile .n{font-weight:700;display:block;text-shadow:0 1px 2px rgba(0,0,0,.35);position:relative}
+.tile .a{opacity:.92;text-shadow:0 1px 2px rgba(0,0,0,.35);position:relative}
+.tile .cut{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.55);transition:height .25s}
+.tile .cut.up{background:rgba(0,0,0,.28)}
+.tile .badge{position:absolute;top:3px;right:3px;background:#fff;color:#14213d;border-radius:6px;padding:0 4px;font-weight:800;font-size:11px}
+.tile.dark{color:#14213d}.tile.dark .n,.tile.dark .a{text-shadow:none}
+.group{margin-top:16px}
+.group-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin:0 0 6px;color:var(--ink)}
+.group-h .sum{margin-left:auto;font-weight:600;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dot{width:12px;height:12px;border-radius:4px;flex:none}
+.item{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:10px 12px;margin-bottom:8px;border:2px solid transparent;transition:border-color .3s}
+.item.flash{border-color:var(--brand2)}
+.item.changed{border-left:4px solid var(--brand2)}
+.item-head{display:flex;align-items:flex-start;gap:8px}
+.item-head .name{font-weight:650;flex:1;min-width:0}
+.item-head .base{font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.info{border:1px solid var(--line);background:#f6f8fb;border-radius:50%;width:24px;height:24px;font-size:13px;font-weight:700;line-height:1;flex:none;padding:0}
+.ctrl{display:flex;align-items:center;gap:8px;margin-top:6px}
+.step{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#f6f8fb;font-size:20px;font-weight:700;flex:none;padding:0;touch-action:manipulation}
+.step:active{background:#e3e8f1}
+input[type=range]{flex:1;min-width:0;height:38px;background:transparent;-webkit-appearance:none;appearance:none;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--trk,#dfe5ee)}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:var(--trk,#dfe5ee)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--brand2);margin-top:-9px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--brand2)}
+input[type=range]:disabled{opacity:.4}
+.val{min-width:78px;text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.item-foot{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin-top:2px;flex-wrap:wrap}
+.eff{font-weight:700;font-variant-numeric:tabular-nums}
+.pos{color:var(--good)}.negc{color:var(--bad)}
+.note{font-size:13px;background:#f6f8fb;border-radius:8px;padding:8px 10px;margin-top:8px;color:#344}
+.tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:11.5px;background:#e6ecf5;color:#1d3b66;border-radius:999px;padding:2px 8px;font-weight:600}
+.locked{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:6px}
+.rule{font-size:12px;color:var(--muted);margin-top:4px}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.preset{text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px}
+.preset b{display:block}
+.preset span{font-size:13px;color:var(--muted)}
+.preset.on{border-color:var(--good);background:#eefaf3}
+.preset .pe{float:right;font-weight:800;color:var(--good);margin-left:6px}
+.preset .pe.neg{color:var(--bad)}
+.eff-list{list-style:none;margin:0;padding:0}
+.eff-list li{padding:10px 0;border-bottom:1px solid var(--line)}
+.eff-list li:last-child{border-bottom:none}
+.eff-list .r1{display:flex;justify-content:space-between;gap:8px;font-weight:650}
+.eff-list .r1>span:last-child{white-space:nowrap}
+.eff-list .r2{font-size:13px;color:var(--muted);margin-top:3px}
+.who-row{display:grid;grid-template-columns:130px 1fr 76px;align-items:center;gap:8px;font-size:13px;margin:5px 0}
+.who-bar{height:12px;border-radius:6px;background:#eef1f6;position:relative;overflow:hidden}
+.who-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:6px}
+.who-row .wv{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.warnbox{background:#fff6e5;border-radius:10px;padding:10px 12px;font-size:13.5px;margin:8px 0;color:#5e3b00}
+.empty{color:var(--muted);font-size:14px}
+.src{font-size:14px;padding-left:20px}.src li{margin-bottom:8px;word-break:break-word}
+.src a{color:var(--brand2)}
+footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(10,20,40,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal[hidden]{display:none}
+.modal .box{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:16px;max-height:90vh;overflow:auto}
+.modal textarea{width:100%;height:220px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:8px;padding:8px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#14213d;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+.confetti{position:fixed;top:-20px;font-size:22px;z-index:70;pointer-events:none;animation:fall 2.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.7}}
+@media (prefers-reduced-motion:reduce){.confetti{display:none}.fill,.seg,.tile .cut{transition:none}}
+.more{border:none;background:none;color:var(--brand2);font-size:12.5px;font-weight:700;padding:4px 0 0}
+@media (min-width:960px){ .meter .more{display:none} .tabs{flex-wrap:wrap} .side{grid-column:2;grid-row:1} main{grid-column:1;grid-row:1;min-width:0} }
+@media (max-width:959px){
+  .layout{grid-template-columns:minmax(0,1fr);padding:10px;gap:12px}
+  .layout>*,.side>*{min-width:0}
+  .side{display:contents}
+  .meter{position:sticky;top:0;z-index:20;order:1;border-radius:0 0 14px 14px;margin:-10px -10px 0;padding:10px 12px 8px;box-shadow:0 4px 14px rgba(16,32,64,.15)}
+  .meter .label{font-size:11.5px}
+  .meter .big{font-size:26px}
+  .meter .track{height:22px;margin:4px 0 0}
+  .meter .kpis{display:none}
+  .meter.expanded .kpis{display:grid}
+  .meter .status{font-size:13px;padding:6px 9px;margin-top:4px}
+  .meter .oneoff{display:none}
+  .meter.expanded .oneoff:not([hidden]){display:block}
+  .balance{order:2}
+  main{order:3;min-width:0}
+  .whocard{order:4}
+  .tabs{top:var(--meterH,150px)}
+  header.top h1{font-size:24px}
+  header.top{padding:14px 12px}
+}
+@media (max-width:420px){
+  body{font-size:14.5px}
+  .val{min-width:66px;font-size:14px}
+  .step{width:36px;height:36px}
+  .who-row{grid-template-columns:100px 1fr 66px}
+  .presets{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div>
+      <h1><span>€</span>Budjettipeli</h1>
+      <p>Valtion talousarvio 2026 pelattavana. Leikkaa menoja tai korota veroja ja yritä saavuttaa <b>Velkajarru</b> eli 8–11 miljardin euron sopeutus.</p>
+    </div>
+    <div class="hbtns">
+      <button class="btn" id="shareBtn" type="button">Jaa tulos</button>
+      <button class="btn" id="resetBtn" type="button">Aloita alusta</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="side">
+    <section class="card meter" id="meter" aria-live="polite">
+      <div class="label">Tavoite: Velkajarru (8–11 mrd €)</div>
+      <div class="big" id="total">0 M€ <small>säästöä</small></div>
+      <div class="track" aria-hidden="true">
+        <div class="fill" id="fill"></div>
+        <div class="zone" id="zone"><b>Velkajarru</b></div>
+      </div>
+      <div class="ticks" id="ticks"></div>
+      <div class="status" id="status">Velkajarruun puuttuu vielä 8 mrd €.</div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">Menosäästöt</div><div class="v" id="kExp">0</div></div>
+        <div class="kpi"><div class="k">Tulojen lisäys</div><div class="v" id="kRev">0</div></div>
+        <div class="kpi"><div class="k">Alijäämä (nettolainanotto)</div><div class="v" id="kDef">0</div></div>
+        <div class="kpi"><div class="k">Muutettu osuus budjetista</div><div class="v" id="kShare">0</div></div>
+        <div class="kpi"><div class="k">Menot yhteensä</div><div class="v" id="kTotExp">0</div></div>
+        <div class="kpi"><div class="k">Korkosäästö tulevina vuosina*</div><div class="v" id="kInt">0</div></div>
+      </div>
+      <div class="oneoff" id="oneoff" hidden></div>
+      <button class="more" id="moreBtn" type="button">Näytä lisätiedot ▾</button>
+    </section>
+
+    <section class="card balance">
+      <h2>Kokonaiskuva: tulot ja menot</h2>
+      <div class="bal-row">
+        <div class="t"><span>Menot</span><b id="bExp"></b></div>
+        <div class="bar" id="barExp"></div>
+      </div>
+      <div class="bal-row">
+        <div class="t"><span>Tulot + velanotto</span><b id="bRev"></b></div>
+        <div class="bar" id="barRev"></div>
+      </div>
+      <div class="legend" id="legRev"></div>
+      <p class="rule">Katkoviiva = alkuperäinen taso. Punavalkoinen raita = velalla katettava osa (alijäämä).</p>
+    </section>
+
+    <section class="card whocard">
+      <h2>Kenen arkeen muutokset osuvat?</h2>
+      <div id="whoBox"><p class="empty">Tee muutoksia, niin näet täällä, mihin ryhmiin ne kohdistuvat.</p></div>
+      <p class="rule">Suuntaa-antava jakauma: kunkin toimen euromäärä jaetaan tasan sen pääasiallisille kohderyhmille.</p>
+    </section>
+  </aside>
+
+  <main>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="menot" aria-selected="true">Menot</button>
+      <button class="tab" role="tab" data-tab="tulot" aria-selected="false">Tulot ja verot</button>
+      <button class="tab" role="tab" data-tab="pika" aria-selected="false">Pikavalinnat</button>
+      <button class="tab" role="tab" data-tab="vaik" aria-selected="false">Vaikutukset</button>
+      <button class="tab" role="tab" data-tab="ohje" aria-selected="false">Ohje ja lähteet</button>
+    </nav>
+
+    <section class="panel" id="p-menot">
+      <div class="card">
+        <h2>Valtion menot 2026: 90,8 mrd €</h2>
+        <p class="intro">Ruudun koko kertoo määrärahan suuruuden. Napauta ruutua siirtyäksesi sen säätimeen. Vaalea alue ruudun alaosassa näyttää leikkauksen, tumma lisäyksen.</p>
+        <div class="tm" id="tmExp"></div>
+        <div class="legend" id="legExp"></div>
+      </div>
+      <div id="expList"></div>
+    </section>
+
+    <section class="panel" id="p-tulot" hidden>
+      <div class="card">
+        <h2>Valtion tulot 2026: 81,5 mrd € + nettolainanotto 9,4 mrd €</h2>
+        <p class="intro">Verotulot ovat 68,2 mrd € (84 % tuloista). Veroja voi korottaa tai alentaa. Arvioitu tuottovaikutus perustuu valtiovarainministeriön ja muiden virallisten lähteiden nyrkkisääntöihin (staattisia arvioita, ks. Ohje ja lähteet).</p>
+        <div class="tm" id="tmRev"></div>
+        <div class="legend" id="legRev2"></div>
+      </div>
+      <div id="revList"></div>
+    </section>
+
+    <section class="panel" id="p-pika" hidden>
+      <div class="card">
+        <h2>Pikavalinnat</h2>
+        <p class="intro">Valmiita esimerkkitoimia, joita on esitetty julkisessa keskustelussa. Napauta valitaksesi – napauta uudelleen peruaksesi. Voit hienosäätää niitä Menot- ja Tulot ja verot -välilehdillä.</p>
+        <div class="presets" id="presets"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="p-vaik" hidden>
+      <div class="card">
+        <h2>Tekemiesi muutosten vaikutukset</h2>
+        <div id="effBox"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="p-ohje" hidden>
+      <div class="card">
+        <h2>Miten pelataan?</h2>
+        <ol class="src">
+          <li>Valtion vuoden 2026 talousarviossa menot ovat 90,8 mrd € ja tulot (ilman lainanottoa) 81,5 mrd €. Erotus, noin <b>9,4 mrd €</b>, katetaan ottamalla lisää velkaa.</li>
+          <li><b>Velkajarru</b> on pelin tavoite: löydä menoleikkauksia ja/tai veronkorotuksia yhteensä <b>8–11 mrd €</b> vuodessa.</li>
+          <li>Säädä menoja liukusäätimillä (−/+ painikkeet hienosäätöön) ja veroja Tulot ja verot -välilehdellä. Mittari, kokonaiskuva ja vaikutuslista päivittyvät heti.</li>
+          <li>Valintasi tallentuvat selaimeesi automaattisesti. ”Jaa tulos” kopioi yhteenvedon, ”Aloita alusta” nollaa kaiken.</li>
+        </ol>
+        <h3>Oletukset ja rajoitukset</h3>
+        <ul class="src">
+          <li>Luvut ovat <b>eduskunnan hyväksymästä valtion talousarviosta vuodelle 2026</b> (Suomen säädöskokoelma 1329/2025, julkaistu 23.12.2025). Vuoden 2026 I lisätalousarvioesitys nostaisi nettolainanoton arviota noin 10,8 mrd euroon; peli käyttää varsinaista talousarviota.</li>
+          <li>Menot on ryhmitelty pääluokittain, ja suurimmat erät (esim. hyvinvointialueiden rahoitus, Kela-etuudet, korkeakoulut) on eritelty omiksi riveikseen. Pienemmät erät on yhdistetty.</li>
+          <li>Pelin vaikutukset ovat <b>staattisia</b>: leikkauksen tai veronkorotuksen vaikutus talouskasvuun, työllisyyteen ja sitä kautta verotuloihin ei sisälly lukuihin. Todellisuudessa osa säästöstä valuu takaisin (esim. työttömyysmenoina tai pienempinä verotuloina).</li>
+          <li>Veronkorotusten tuotot ovat likimääräisiä nyrkkisääntöjä (ks. lähteet). Valmisteveroissa on huomioitu karkeasti, että verotason nosto ei kasvata tuottoa täysimääräisesti (esim. matkustajatuonti). Nämä kertoimet sekä pääomatuloveron arvio ovat pelin omia karkeita arvioita.</li>
+          <li>Monet menot ovat lakisääteisiä (esim. eläkkeet, Kela-etuudet, hyvinvointialueiden rahoitus). Niiden leikkaaminen vaatisi lakimuutoksia. EU-jäsenmaksut ja valtionvelan korot on lukittu, koska niistä ei voi päättää yksin talousarviossa.</li>
+          <li>*Korkosäästö: jos velanotto pienenee, tulevat korkomenot pienenevät. Arvio olettaa 3 %:n keskikoron.</li>
+          <li>Peli on puolueeton harjoitus: se ei suosittele mitään toimia. Kuvaukset vaikutuksista ovat yleisluontoisia.</li>
+        </ul>
+        <h3>Lähteet</h3>
+        <ol class="src" id="sources"></ol>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>Budjettipeli · Lukujen lähde: valtion talousarvio 2026 (hyväksytty, SK 1329/2025), budjetti.vm.fi. Toimii ilman verkkoyhteyttä. Luvut miljoonina euroina (M€) tai miljardeina (mrd €).</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="box">
+    <h2 style="margin-top:0">Jaa tulos</h2>
+    <p class="intro">Kopioi teksti ja liitä se viestiin tai somepäivitykseen.</p>
+    <textarea id="shareText" readonly></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <button class="btn" id="copyBtn" type="button">Kopioi</button>
+      <button class="btn" id="closeModal" type="button">Sulje</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ====== DATA: Valtion talousarvio 2026 (hyväksytty, SK 1329/2025), milj. euroa ====== */
+const BASE_EXP = 90829.841;   // määrärahat yhteensä
+const BASE_REV = 81457.761;   // tuloarviot ilman nettolainanottoa
+const BASE_DEF = 9372.080;    // nettolainanotto ja velanhallinta (15.03.01)
+const T_MIN = 8000, T_MAX = 11000, SCALE_MAX = 14000;
+
+const WHO = {
+  kotit:"Kaikki kotitaloudet", tyoss:"Palkansaajat", pieni:"Pienituloiset", lapsi:"Lapsiperheet",
+  elak:"Eläkeläiset", tyot:"Työttömät", opisk:"Opiskelijat ja nuoret", sote:"Sote-palveluiden käyttäjät",
+  kunnat:"Kunnat ja kuntalaiset", yrit:"Yritykset", sijoit:"Omistajat ja sijoittajat", maat:"Maatalous ja maaseutu",
+  turva:"Turvallisuus ja puolustus", intl:"Kansainvälinen apu", kult:"Kulttuuri, media ja liikunta",
+  liik:"Liikenne ja alueet", hall:"Valtionhallinto", tutk:"Tutkimus ja osaaminen", ymp:"Ympäristö ja ilmasto",
+  maahan:"Maahanmuuttajat"
+};
+
+const GROUPS = {
+  g21:{n:"Eduskunta, presidentti ja VNK", c:"#8d6e63"},
+  g24:{n:"Ulkoministeriö", c:"#00897b"},
+  g25:{n:"Oikeusministeriö", c:"#7e57c2"},
+  g26:{n:"Sisäministeriö", c:"#3f51b5"},
+  g27:{n:"Puolustusministeriö", c:"#455a64"},
+  g28:{n:"Valtiovarainministeriö", c:"#ef6c00"},
+  g29:{n:"Opetus- ja kulttuuriministeriö", c:"#1e88e5"},
+  g30:{n:"Maa- ja metsätalousministeriö", c:"#7cb342"},
+  g31:{n:"Liikenne- ja viestintäministeriö", c:"#f9a825", dark:true},
+  g32:{n:"Työ- ja elinkeinoministeriö", c:"#00acc1"},
+  g33:{n:"Sosiaali- ja terveysministeriö", c:"#d32f2f"},
+  g35:{n:"Ympäristöministeriö", c:"#2e7d32"},
+  g36:{n:"Valtionvelan korot", c:"#9e9e9e"}
+};
+
+// min/max = muutos-% (negatiivinen = leikkaus)
+const EXP = [
+ {id:"ylin",g:"g21",n:"Eduskunta, tasavallan presidentti ja valtioneuvoston kanslia",b:423.908,min:-20,max:10,who:["hall"],
+  t:"Kansanedustajien ja eduskunnan toiminta, presidentin kanslia, valtioneuvoston kanslia ja puoluetuki. Euromäärältään pieni erä, mutta symbolisesti tärkeä."},
+ {id:"kehy",g:"g24",n:"Kansainvälinen kehitysyhteistyö",b:601.442,min:-100,max:50,who:["intl"],
+  t:"Suomen kehitysyhteistyö kehitysmaissa ja kansainvälisten järjestöjen kautta. Leikkaus vähentää humanitaarista apua ja hankkeita. Suomi on sitoutunut YK:n 0,7 %:n BKTL-tavoitteeseen pitkällä aikavälillä."},
+ {id:"um",g:"g24",n:"Ulkoasiainhallinto, kriisinhallinta ja muut UM:n menot",b:549.811,min:-25,max:20,who:["hall","intl"],
+  t:"Suurlähetystöt, ulkoministeriön toiminta, siviilikriisinhallinta sekä kansainväliset jäsenmaksut."},
+ {id:"om",g:"g25",n:"Oikeuslaitos: tuomioistuimet, vankilat, syyttäjät, oikeusapu, ulosotto",b:1243.011,min:-20,max:20,who:["turva","hall"],
+  t:"Leikkaus pidentäisi oikeudenkäyntien käsittelyaikoja ja heikentäisi oikeusapua ja rangaistusten täytäntöönpanoa."},
+ {id:"poliisi",g:"g26",n:"Poliisitoimi",b:1097.103,min:-20,max:20,who:["turva"],
+  t:"Poliisin toimintamenot. Leikkaus vähentäisi poliisien määrää ja hidastaisi vasteaikoja ja rikostutkintaa."},
+ {id:"raja",g:"g26",n:"Rajavartiolaitos",b:361.975,min:-20,max:20,who:["turva"],
+  t:"Itärajan ja merialueiden valvonta. Turvallisuustilanteen vuoksi resursseja on viime vuosina lisätty."},
+ {id:"sm",g:"g26",n:"Pelastustoimi, hätäkeskukset, maahanmuutto ja SM:n hallinto",b:635.264,min:-25,max:20,who:["turva","maahan"],
+  t:"Hätäkeskuslaitos, Maahanmuuttovirasto, vastaanottokeskukset ja sisäministeriön hallinto."},
+ {id:"puolustus",g:"g27",n:"Puolustus (sis. HX-hävittäjähankinnat)",b:6397.905,min:-30,max:30,who:["turva"],
+  t:"Puolustusvoimat, materiaalihankinnat ja HX-hävittäjät. Suomi on sitoutunut Naton tavoitteeseen nostaa puolustusmenoja. Suuri osa hankinnoista on sopimuksiin sidottuja, joten nopea leikkaus on vaikeaa."},
+ {id:"hva",g:"g28",n:"Hyvinvointialueiden rahoitus (sote- ja pelastuspalvelut)",b:27190.763,min:-15,max:10,who:["sote","kotit"],
+  t:"Valtion suurin yksittäinen meno: rahoittaa terveyskeskukset, sairaalat, vanhuspalvelut, lastensuojelun ja pelastustoimen. Hyvinvointialueilla ei ole verotusoikeutta, joten leikkaus näkyisi palvelujen karsintana, jonoina tai henkilöstövähennyksinä. Rahoitus on lakisääteinen."},
+ {id:"kunnat",g:"g28",n:"Kuntien valtionosuudet ja veromenetysten korvaukset",b:4089.151,min:-30,max:15,who:["kunnat"],
+  t:"Rahoittaa mm. perusopetusta, kirjastoja, kulttuuria ja vuodesta 2025 alkaen kuntien TE-palveluita. Leikkaus voisi johtaa kunnallisveron korotuksiin tai palveluleikkauksiin."},
+ {id:"vkel",g:"g28",n:"Valtion eläkkeet (valtion entisten työntekijöiden eläkkeet)",b:6109.403,min:-5,max:5,who:["elak"],
+  t:"Ansaittuja lakisääteisiä työeläkkeitä. Leikkaaminen olisi oikeudellisesti erittäin vaikeaa (omaisuudensuoja), siksi pelissä vain ±5 %."},
+ {id:"eu",g:"g28",n:"EU-jäsenmaksut ja kansainväliset rahoituslaitokset",b:2813.932,min:0,max:0,who:["intl"],lock:"EU-maksut määräytyvät EU:n monivuotisen rahoituskehyksen mukaan, eikä Suomi voi päättää niistä yksin.",
+  t:"Suomen maksut EU:n budjettiin (2,73 mrd €) sekä osuudet kansainvälisiin rahoituslaitoksiin."},
+ {id:"vm",g:"g28",n:"Verohallinto, Tulli, Ahvenanmaan siirrot ja muu VM:n hallinto",b:1648.724,min:-15,max:10,who:["hall"],
+  t:"Verotuksen ja tullin toiminta, Tilastokeskus, Ahvenanmaan tasoitusmaksu ym. Verohallinnon leikkaus voi heikentää verovalvontaa ja siten verotuloja."},
+ {id:"perus",g:"g29",n:"Varhaiskasvatus, perusopetus ja vapaa sivistystyö (valtion erillisrahoitus)",b:902.114,min:-30,max:20,who:["lapsi","opisk"],
+  t:"Kansalaisopistot, opetuksen kehittämisavustukset ja muut valtion suorat menot. (Kuntien perusopetuksen pääosa rahoitetaan valtionosuuksien kautta.)"},
+ {id:"toinen",g:"g29",n:"Ammatillinen koulutus ja lukiot",b:1413.652,min:-25,max:20,who:["opisk"],
+  t:"Toisen asteen koulutuksen rahoitus. Leikkaus vähentäisi opetusta ja ohjausta. Oppivelvollisuus kattaa toisen asteen."},
+ {id:"korkea",g:"g29",n:"Yliopistot, ammattikorkeakoulut ja tutkimus",b:4110.843,min:-25,max:20,who:["opisk","tutk"],
+  t:"Yliopistojen ja AMK:iden perusrahoitus sekä Suomen Akatemian tutkimusrahoitus. Leikkaus voi heikentää osaamista ja pitkän aikavälin kasvua."},
+ {id:"opintotuki",g:"g29",n:"Opintotuki",b:1316.060,min:-40,max:20,who:["opisk","pieni"],
+  t:"Opintoraha, opintolainan valtiontakaus- ja hyvitysmenot ym. Leikkaus lisäisi opiskelijoiden velkaantumista ja työssäkäyntiä opintojen ohessa."},
+ {id:"kulttuuri",g:"g29",n:"Taide ja kulttuuri",b:561.660,min:-50,max:30,who:["kult"],
+  t:"Teatterit, orkesterit, museot, kirjastot, taiteilija-apurahat, Kansallisooppera ym."},
+ {id:"okm",g:"g29",n:"Liikunta, nuorisotyö, kirkollisasiat ja OKM:n hallinto",b:692.723,min:-40,max:20,who:["kult","opisk"],
+  t:"Urheilu- ja liikuntajärjestöjen ja nuorisotyön avustukset, Opetushallitus ja ministeriön hallinto."},
+ {id:"maatalous",g:"g30",n:"Maataloustuet ja elintarviketalous",b:1725.547,min:-40,max:20,who:["maat"],
+  t:"Viljelijätuet, joista osa on EU:n rahoittamia. Kansallisten tukien leikkaus voi heikentää tilojen kannattavuutta ja huoltovarmuutta. EU-osarahoitteisten tukien leikkaus voi menettää myös EU-rahaa."},
+ {id:"mmm",g:"g30",n:"Maaseudun kehittäminen, metsä- ja luonnonvaratalous, maanmittaus",b:831.856,min:-40,max:20,who:["maat","ymp"],
+  t:"Maaseudun kehittämisohjelmat, metsätalouden tuet, Luonnonvarakeskus, Ruokavirasto, Maanmittauslaitos."},
+ {id:"vaylat",g:"g31",n:"Tiet, radat ja vesiväylät",b:2183.500,min:-40,max:30,who:["liik"],
+  t:"Perusväylänpito ja uudet väylähankkeet. Leikkaus kasvattaisi väylien korjausvelkaa ja voisi heikentää alueiden saavutettavuutta."},
+ {id:"yle",g:"g31",n:"Yleisradio (siirto televisio- ja radiorahastoon)",b:593.652,min:-50,max:10,who:["kult"],
+  t:"Ylen rahoitus. Yle-vero kerätään valtion yleisiin tuloihin. Leikkaus vaatisi Yle-lain muutoksen."},
+ {id:"joukko",g:"g31",n:"Joukkoliikenne, saaristoliikenne ja muut liikennepalvelut",b:352.092,min:-50,max:30,who:["liik"],
+  t:"Kaupunki- ja seutuliikenteen tuet, junaliikenteen ostot, yhteysalusliikenne ja merenkulun tuet."},
+ {id:"lvm",g:"g31",n:"Liikennevirastot, Ilmatieteen laitos ja LVM:n arvonlisäveromenot",b:806.885,min:-15,max:10,who:["hall","liik"],
+  t:"Sisältää noin 588 M€ hallinnonalan arvonlisäveromenoja (valtio maksaa veroa itselleen) sekä virastojen toimintamenot."},
+ {id:"yritystuet",g:"g32",n:"Yritys-, energia- ja innovaatiotuet (TKI, energiatuki, uusiutuvan energian tuet)",b:1694.859,min:-60,max:30,who:["yrit","tutk","ymp"],
+  t:"Business Finlandin TKI-avustukset ja -lainat, energiatuki, uusiutuvan energian tuotantotuki, teollisuuden sähköistämistuki. Osa on sidottu aiempiin päätöksiin ja TKI-rahoituslakiin."},
+ {id:"tyollisyys",g:"g32",n:"Työllisyys, yrittäjyys ja EU:n rakennerahastot",b:679.589,min:-40,max:20,who:["tyot","liik","yrit"],
+  t:"Pääosin EU:n alue- ja rakennepolitiikan ohjelmia, joihin tarvitaan kansallista vastinrahaa. Leikkaus voi menettää myös EU-rahoitusta."},
+ {id:"kotoutus",g:"g32",n:"Kotoutumisen edistäminen (korvaukset kunnille)",b:351.693,min:-40,max:20,who:["maahan","kunnat"],
+  t:"Valtion korvaukset kunnille ja hyvinvointialueille pakolaisten ja muiden maahanmuuttajien kotoutumispalveluista."},
+ {id:"tem",g:"g32",n:"TEM:n virastot, VTT, Business Finlandin toiminta ja yritysrahoitus",b:822.900,min:-25,max:20,who:["hall","yrit","tutk"],
+  t:"Elinvoimakeskukset, VTT, Geologian tutkimuskeskus, Huoltovarmuuskeskus, Finnveran tappiokorvaukset ym."},
+ {id:"perhe",g:"g33",n:"Perhe-etuudet (lapsilisät, vanhempainpäivärahat ym.)",b:1600.420,min:-40,max:30,who:["lapsi"],
+  t:"Lapsilisät, äitiysavustus ja vanhempainetuuksien valtionosuus. Leikkaus heikentäisi lapsiperheiden toimeentuloa."},
+ {id:"asumistuki",g:"g33",n:"Yleinen asumistuki",b:1097.000,min:-50,max:30,who:["pieni","opisk"],
+  t:"Pienituloisten asumismenojen tuki. Leikkaus voi osin siirtyä toimeentulotukimenoiksi."},
+ {id:"toimeentulo",g:"g33",n:"Perustoimeentulotuki",b:1040.200,min:-30,max:30,who:["pieni"],
+  t:"Viimesijainen sosiaaliturva. Leikkausmahdollisuus on rajallinen, koska perustuslaki turvaa välttämättömän toimeentulon."},
+ {id:"kela",g:"g33",n:"Kelan toimintakulut, tulkkauspalvelut ja sotilasavustus",b:545.387,min:-20,max:20,who:["hall","kotit"],
+  t:"Kelan hallinto ja etuuskäsittely. Leikkaus voi pidentää käsittelyaikoja."},
+ {id:"tyottomyys",g:"g33",n:"Työttömyysturva (valtion osuus)",b:2071.784,min:-30,max:30,who:["tyot"],
+  t:"Työmarkkinatuki, peruspäiväraha ja valtion osuus ansiopäivärahoista. Meno riippuu työttömyyden määrästä. Leikkaukset koskettaisivat työttömiä."},
+ {id:"sairaus",g:"g33",n:"Sairausvakuutus (valtion osuus: lääkekorvaukset, sairauspäivärahat ym.)",b:1752.860,min:-30,max:20,who:["sote","kotit"],
+  t:"Lääkekorvaukset, Kela-korvaukset ja sairauspäivärahojen valtionosuus. Leikkaus nostaisi omavastuita."},
+ {id:"kansanelake",g:"g33",n:"Kansaneläke, takuueläke ja muut Kelan eläke-etuudet",b:3969.400,min:-15,max:15,who:["elak","pieni"],
+  t:"Pienituloisten eläkeläisten perusturva, eläkkeensaajan asumistuki ja vammaisetuudet. Lakisääteisiä."},
+ {id:"yrittajaelake",g:"g33",n:"Valtion osuus yrittäjien, maatalousyrittäjien ja merimiesten eläkkeistä",b:1552.900,min:-15,max:10,who:["elak","maat","yrit"],
+  t:"Valtio kattaa YEL- ja MYEL-eläkejärjestelmien vajetta. Leikkaus edellyttäisi maksujen korotuksia tai eläkemuutoksia."},
+ {id:"jarjestot",g:"g33",n:"Avustukset sosiaali- ja terveysjärjestöille",b:273.912,min:-60,max:20,who:["sote","pieni"],
+  t:"Järjestöjen tuottama tuki ja vertaistoiminta (esim. kriisipuhelimet, potilasjärjestöt)."},
+ {id:"stm",g:"g33",n:"STM:n hallinto, THL, valvonta, veteraanit, lomitus ja sote-tuet",b:981.547,min:-20,max:20,who:["sote","hall"],
+  t:"Ministeriö ja virastot, veteraanietuudet, maatalousyrittäjien lomitus, erikoislääkärikoulutuksen korvaukset ym."},
+ {id:"ym",g:"g35",n:"Ympäristönsuojelu, asuminen ja ympäristöhallinto",b:496.348,min:-50,max:30,who:["ymp","kotit"],
+  t:"Luonnonsuojelu, METSO-ohjelma, asumisen avustukset ja ympäristöhallinto."},
+ {id:"korot",g:"g36",n:"Valtionvelan korot",b:3246.066,min:0,max:0,who:[],lock:"Korot määräytyvät olemassa olevan velan ja korkotason mukaan. Velanoton pienentäminen alentaa korkomenoja vasta tulevina vuosina.",
+  t:"Noin 201 mrd euron valtionvelan korot."}
+];
+
+const REVG = {
+  tulo:{n:"Tuloverot",c:"#3949ab"}, yht:{n:"Yhteisövero",c:"#00897b"}, alv:{n:"Arvonlisävero",c:"#f4511e"},
+  valm:{n:"Valmisteverot",c:"#8e24aa"}, muuv:{n:"Muut verot",c:"#6d4c41"}, muu:{n:"Muut tulot",c:"#78909c"}
+};
+const REV = [
+ {id:"ansio",g:"tulo",n:"Ansio- ja pääomatuloverot",b:26480},
+ {id:"yhteiso",g:"yht",n:"Yhteisövero",b:5783},
+ {id:"alv",g:"alv",n:"Arvonlisävero",b:23736},
+ {id:"energia",g:"valm",n:"Energiaverot",b:3780},
+ {id:"alkoholi",g:"valm",n:"Alkoholijuomavero",b:1447},
+ {id:"tupakka",g:"valm",n:"Tupakkavero",b:1115},
+ {id:"virvoitus",g:"valm",n:"Virvoitusjuoma- ja juomapakkausvero",b:296},
+ {id:"perinto",g:"muuv",n:"Perintö- ja lahjavero, korkotulojen lähdevero ym.",b:1380},
+ {id:"vakuutus",g:"muuv",n:"Vakuutusmaksuvero ja apteekkivero",b:1317},
+ {id:"ajoneuvo",g:"muuv",n:"Ajoneuvovero",b:1016},
+ {id:"varainsiirto",g:"muuv",n:"Varainsiirtovero",b:671},
+ {id:"autovero",g:"muuv",n:"Autovero",b:270},
+ {id:"muutverot",g:"muuv",n:"Arpajais-, jäte- ja kaivosmineraalivero",b:160},
+ {id:"veronl",g:"muuv",n:"Muut veronluonteiset tulot (mm. Veikkauksen korvaus)",b:774.053},
+ {id:"sekal",g:"muu",n:"Sekalaiset tulot (EU-tulot, eläkerahastosiirto, asuntorahaston tuloutus ym.)",b:10095.325},
+ {id:"osingot",g:"muu",n:"Korot, osingot ja voitontuloutukset",b:3066.502},
+ {id:"lyhennys",g:"muu",n:"Valtion myöntämien lainojen lyhennykset",b:70.881}
+];
+
+// unit: pp = prosenttiyksikkö (per = M€/%-yks.), pct = verotason muutos % (base*factor), eur = M€ suoraan
+const LEV = [
+ {id:"ansiovero",cat:"ansio",n:"Valtion ansiotuloveroasteikko (kaikki tuloluokat)",unit:"pp",per:1200,min:-2,max:3,step:0.5,who:["tyoss","elak","kotit"],
+  now:"Nyt 12,64–37,5 % (5 tuloluokkaa)",rule:"≈ 1,2 mrd € / %-yks. (staattinen arvio, Verotutkimuksen huippuyksikkö / VATT)",
+  t:"Koskee palkansaajia, eläkeläisiä ja etuuksien saajia. Valtaosa tuotosta tulisi keskituloisilta. Ansiotuloverotuksen kiristys voi heikentää työn tarjontaa."},
+ {id:"paaoma",cat:"ansio",n:"Pääomatulovero",unit:"pp",per:140,min:-4,max:4,step:1,who:["sijoit"],
+  now:"Nyt 30 % / 34 % (yli 30 000 €)",rule:"≈ 140 M€ / %-yks. (pelin karkea arvio pääomatuloveron kertymästä)",
+  t:"Koskee osinkoja, luovutusvoittoja, vuokra- ja korkotuloja. Kohdistuu painottuen suurituloisiin ja voi vaikuttaa sijoituspäätöksiin ja osinkojen ajoitukseen."},
+ {id:"yhteisovero",cat:"yhteiso",n:"Yhteisövero",unit:"pp",per:416,min:-4,max:6,step:1,who:["yrit","sijoit"],
+  now:"Nyt 20 % (päätetty laskea 18 %:iin v. 2027)",rule:"≈ 416 M€ / %-yks. (VN: 2 %-yks. alennus ≈ 832 M€, staattinen)",
+  t:"Yritysten voitoista maksettava vero. Korotus voi heikentää investointeja ja Suomen houkuttelevuutta yritysten sijaintipaikkana pitkällä aikavälillä."},
+ {id:"alvy",cat:"alv",n:"Arvonlisävero, yleinen verokanta",unit:"pp",per:640,min:-2.5,max:3,step:0.5,who:["kotit","pieni"],
+  now:"Nyt 25,5 %",rule:"≈ 640 M€ / %-yks. (HE 61/2024: 1,5 %-yks. ≈ 956 M€ kysyntävaikutus huomioiden)",
+  t:"Nostaa useimpien tuotteiden ja palveluiden hintoja. Kulutusverona kohdistuu tuloihin suhteutettuna eniten pienituloisiin, mutta on tehokas tapa kerätä verotuloja."},
+ {id:"alva",cat:"alv",n:"Arvonlisävero, alennettu kanta (ruoka, ravintolat, lääkkeet, kirjat ym.)",unit:"pp",per:300,min:-3.5,max:6,step:0.5,who:["kotit","pieni","lapsi"],
+  now:"Nyt 13,5 %",rule:"≈ 300 M€ / %-yks. (TAE 2026: 0,5 %-yks. alennus ≈ −159 M€ vuositasolla)",
+  t:"Elintarvikkeiden, ravintola- ja majoituspalveluiden, lääkkeiden, kirjojen ym. verokanta. Korotus nostaisi ruoan hintaa."},
+ {id:"energiav",cat:"energia",n:"Energiaverot (polttoaineet, sähkö, lämmitys)",unit:"pct",base:3780,factor:0.85,min:-30,max:30,step:5,who:["kotit","yrit","liik","ymp"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 85 % suorasta laskelmasta (kulutus joustaa)",
+  t:"Nostaa polttoaineiden ja sähkön hintaa. Ohjaa vähäpäästöisyyteen, mutta kohdistuu erityisesti autoilijoihin haja-asutusalueilla."},
+ {id:"alkoholiv",cat:"alkoholi",n:"Alkoholivero",unit:"pct",base:1447,factor:0.6,min:-20,max:50,step:5,who:["kotit"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 60 % suorasta laskelmasta (matkustajatuonti, kulutuksen jousto)",
+  t:"Terveysperusteinen vero. Suuret korotukset lisäävät matkustajatuontia (esim. Virosta) ja vähentävät kotimaista myyntiä."},
+ {id:"tupakkav",cat:"tupakka",n:"Tupakkavero",unit:"pct",base:1115,factor:0.7,min:-20,max:50,step:5,who:["kotit"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 70 % suorasta laskelmasta",
+  t:"Terveysperusteinen vero. Korotukset vähentävät tupakointia mutta lisäävät laitonta kauppaa ja matkustajatuontia."},
+ {id:"virvoitusv",cat:"virvoitus",n:"Virvoitusjuomavero (sokerivero)",unit:"pct",base:296,factor:0.8,min:-50,max:100,step:10,who:["kotit"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 80 % suorasta laskelmasta",
+  t:"Virvoitusjuomien ja makeutettujen juomien vero."},
+ {id:"perintov",cat:"perinto",n:"Perintö- ja lahjavero",unit:"pct",base:1034,factor:0.9,min:-50,max:50,step:10,who:["sijoit","kotit"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 90 % suorasta laskelmasta",
+  t:"Kohdistuu perinnön- ja lahjansaajiin. Vaikuttaa myös yritysten sukupolvenvaihdoksiin."},
+ {id:"vakuutusv",cat:"vakuutus",n:"Vakuutusmaksuvero",unit:"pct",base:1098,factor:0.95,min:-20,max:20,step:5,who:["kotit","yrit"],
+  now:"Nyt 25,5 % vakuutusmaksuista",rule:"Tuotto ≈ 95 % suorasta laskelmasta",
+  t:"Nostaa esim. koti-, auto- ja yritysvakuutusten hintaa."},
+ {id:"ajoneuvov",cat:"ajoneuvo",n:"Ajoneuvovero",unit:"pct",base:1016,factor:0.95,min:-50,max:50,step:5,who:["kotit","liik"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 95 % suorasta laskelmasta",
+  t:"Vuotuinen vero autoista. Kohdistuu autoileviin kotitalouksiin, erityisesti maaseudulla."},
+ {id:"autov",cat:"autovero",n:"Autovero (uusien autojen hankinta)",unit:"pct",base:270,factor:0.8,min:-100,max:50,step:10,who:["kotit"],
+  now:"Verotason muutos %",rule:"Tuotto ≈ 80 % suorasta laskelmasta",
+  t:"Korotus hidastaisi autokannan uusiutumista. Alennus taas nopeuttaisi sitä."},
+ {id:"varainsiirtov",cat:"varainsiirto",n:"Varainsiirtovero (asunnot, kiinteistöt, arvopaperit)",unit:"pct",base:671,factor:0.9,min:-50,max:50,step:10,who:["kotit","sijoit"],
+  now:"Nyt 1,5 % (asunto-osakkeet) / 3 % (kiinteistöt)",rule:"Tuotto ≈ 90 % suorasta laskelmasta",
+  t:"Asunnon ostajien maksama vero. Korotus voi hidastaa asuntokauppaa ja muuttoliikettä."},
+ {id:"myynti",cat:"osingot",n:"Valtionyhtiöiden osakkeiden myynti (kertaluonteinen)",unit:"eur",min:0,max:3000,step:250,oneoff:true,who:["sijoit"],
+  now:"Lisätulo M€",rule:"Kertaluonteinen tulo – ei pienennä alijäämää pysyvästi",
+  t:"Valtio voi myydä omistuksiaan (esim. pörssiyhtiöiden osakkeita). Myynti tuo kertatulon mutta menettää tulevat osingot. Ei korjaa rakenteellista alijäämää."}
+];
+
+const PRESETS = [
+ {n:"Kehitysyhteistyö −50 %",d:"Puolitetaan kehitysyhteistyön määrärahat.",s:{e:{kehy:-50}}},
+ {n:"ALV +1 %-yks.",d:"Yleinen arvonlisäverokanta 25,5 % → 26,5 %.",s:{r:{alvy:1}}},
+ {n:"Yhteisövero +2 %-yks.",d:"Yhteisöverokanta 20 % → 22 %.",s:{r:{yhteisovero:2}}},
+ {n:"Ansiotuloverot +1 %-yks.",d:"Valtion tuloveroasteikon kaikki portaat +1 %-yks.",s:{r:{ansiovero:1}}},
+ {n:"Pääomatulovero +2 %-yks.",d:"30/34 % → 32/36 %.",s:{r:{paaoma:2}}},
+ {n:"Ruoan ym. alennettu ALV +2 %-yks.",d:"Alennettu kanta 13,5 % → 15,5 %.",s:{r:{alva:2}}},
+ {n:"Alkoholi- ja tupakkavero +20 %",d:"Haittaverojen tasoa nostetaan viidenneksellä.",s:{r:{alkoholiv:20,tupakkav:20}}},
+ {n:"Yritys- ja energiatuet −30 %",d:"Leikataan yritys-, TKI- ja energiatukia.",s:{e:{yritystuet:-30}}},
+ {n:"Maataloustuet −20 %",d:"Leikataan kansallisia ja EU-osarahoitteisia tukia.",s:{e:{maatalous:-20}}},
+ {n:"Hyvinvointialueet −3 %",d:"Hyvinvointialueiden valtionrahoitus pienenee.",s:{e:{hva:-3}}},
+ {n:"Kuntien valtionosuudet −10 %",d:"Kuntien peruspalvelujen valtionosuutta leikataan.",s:{e:{kunnat:-10}}},
+ {n:"Asumistuki −20 %",d:"Yleistä asumistukea leikataan.",s:{e:{asumistuki:-20}}},
+ {n:"Työttömyysturva −10 %",d:"Työttömyysetuuksien valtionosuutta leikataan.",s:{e:{tyottomyys:-10}}},
+ {n:"Puolustus −10 %",d:"Puolustusmenoja leikataan.",s:{e:{puolustus:-10}}},
+ {n:"Korkeakoulut −10 %",d:"Yliopistojen, AMK:iden ja tutkimuksen rahoitusta leikataan.",s:{e:{korkea:-10}}},
+ {n:"Yle-rahoitus −25 %",d:"Yleisradion rahoitusta leikataan neljänneksellä.",s:{e:{yle:-25}}},
+ {n:"Kulttuuri −20 %",d:"Taiteen ja kulttuurin määrärahoja leikataan.",s:{e:{kulttuuri:-20}}},
+ {n:"Väylät −20 %",d:"Teiden ja ratojen rakentamista ja ylläpitoa vähennetään.",s:{e:{vaylat:-20}}},
+ {n:"Valtionyhtiöiden myynti 2 mrd €",d:"Kertaluonteinen tulo osakemyynneistä.",s:{r:{myynti:2000}}},
+ {n:"Juustohöylä: kaikki menot −5 %",d:"Kaikki säädettävät menot −5 % (lukitut eivät muutu).",cheese:5}
+];
+
+const SOURCES = [
+ ["Valtion talousarvio vuodelle 2026 (eduskunnan hyväksymä), Suomen säädöskokoelma 1329/2025, julkaistu 23.12.2025 (Finlex). Kaikki tulo- ja menoluvut.","https://www.finlex.fi/api/media/statute/898294/mainPdf/main.pdf"],
+ ["Valtiovarainministeriö, budjetti.vm.fi – Valtion talousarvioesitykset 2026 (hyväksytty talousarvio ja I lisätalousarvioesitys 2026).","https://budjetti.vm.fi/sisalto.jsp?year=2026&lang=fi&maindoc=/2026/ltae1/hallituksenEsitys/hallituksenEsitys.xml&opennode=0:1:3:5:"],
+ ["HE 99/2025 vp – Hallituksen esitys valtion talousarvioksi vuodelle 2026 (mm. 14 %:n ALV-kannan alennus 13,5 %:iin ≈ −159 M€ vuositasolla).","https://budjetti.vm.fi/indox/sisalto.jsp?id=/2026/tae/hallituksenEsitys/YksityiskohtaisetPerustelut/11/11.html&lang=fi&maindoc=/2026/tae/hallituksenEsitys/hallituksenEsitys.xml&year=2026"],
+ ["HE 61/2024 vp – Yleisen ALV-kannan korotus 24 % → 25,5 %: vuositason tuottovaikutus noin 956 M€ kysyntävaikutus huomioiden.","https://www.edilex.fi/he/20240061"],
+ ["Valtioneuvosto 2025: Yhteisöveroa ehdotetaan alennettavaksi kahdella prosenttiyksiköllä (≈ 832 M€ staattisesti).","https://valtioneuvosto.fi/-/10623/yhteisoveroa-ehdotetaan-alennettavaksi-kahdella-prosenttiyksikolla"],
+ ["Verotutkimuksen huippuyksikkö / VATT: valtion ansiotuloveroasteikon 1 %-yks. korotus ≈ 1,2 mrd €.","https://www.sttinfo.fi/tiedote/72080117/miten-eri-tuloryhmat-reagoisivat-ansiotuloveron-kiristykseen-tutkijat-kertovat?lang=fi&publisherId=69819223"],
+ ["Verohallinto: valtion tuloveroasteikko 2026.","https://www.vero.fi/henkiloasiakkaat/verokortti-ja-veroilmoitus/tulot/ansiotulot/"]
+];
+
+/* ====== STATE ====== */
+const KEY = "budjettipeli-2026-v1";
+let state = {e:{}, r:{}};
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.e && s.r) state = s; }catch(e){} sanitize(); }
+let saveT=null;
+function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} },150); }
+function sanitize(){
+  EXP.forEach(i=>{ let v=+state.e[i.id]||0; v=Math.max(i.min,Math.min(i.max,v)); if(v) state.e[i.id]=v; else delete state.e[i.id]; });
+  LEV.forEach(l=>{ let v=+state.r[l.id]||0; v=Math.max(l.min,Math.min(l.max,v)); if(v) state.r[l.id]=v; else delete state.r[l.id]; });
+  Object.keys(state.e).forEach(k=>{ if(!EXP.some(i=>i.id===k)) delete state.e[k]; });
+  Object.keys(state.r).forEach(k=>{ if(!LEV.some(l=>l.id===k)) delete state.r[k]; });
+}
+
+/* ====== HELPERS ====== */
+const $ = s=>document.querySelector(s);
+const nf0 = new Intl.NumberFormat("fi-FI",{maximumFractionDigits:0});
+const nf1 = new Intl.NumberFormat("fi-FI",{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2 = new Intl.NumberFormat("fi-FI",{minimumFractionDigits:2,maximumFractionDigits:2});
+function fmt(m){ const a=Math.abs(m); if(a>=999.5) return nf2.format(m/1000)+" mrd €"; return nf0.format(Math.round(m))+" M€"; }
+function sfmt(m){ if(Math.round(m)===0) return "±0 M€"; return (m>0?"+":"−")+fmt(Math.abs(m)); }
+function pctTxt(v,unit){ const s = v>0?"+":v<0?"−":"±"; const a=Math.abs(v);
+  if(unit==="pp") return s+(a%1?nf1.format(a):nf0.format(a))+" %-yks.";
+  if(unit==="eur") return (v?"+":"")+nf0.format(a)+" M€";
+  return s+nf0.format(a)+" %"; }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function expSave(i){ return -i.b*(state.e[i.id]||0)/100; }            // + = säästö
+function levEff(l){ const v=state.r[l.id]||0; if(l.unit==="pp") return v*l.per; if(l.unit==="pct") return l.base*v/100*l.factor; return v; } // + = lisätulo
+function catEff(cat){ return LEV.filter(l=>l.cat===cat).reduce((s,l)=>s+levEff(l),0); }
+function totals(){
+  let es=0, ra=0, oo=0, abs=0;
+  EXP.forEach(i=>{ const s=expSave(i); es+=s; abs+=Math.abs(s); });
+  LEV.forEach(l=>{ const s=levEff(l); ra+=s; abs+=Math.abs(s); if(l.oneoff) oo+=s; });
+  const total=es+ra;
+  return {es, ra, oo, total, abs, newExp:BASE_EXP-es, newRev:BASE_REV+ra, def:BASE_DEF-total};
+}
+let toastT=null;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1800); }
+
+/* ====== BUILD UI ====== */
+function stepper(id, kind, o){
+  return `<div class="ctrl">
+    <button class="step" type="button" data-k="${kind}" data-id="${id}" data-d="-1" aria-label="Vähennä">−</button>
+    <input type="range" data-k="${kind}" data-id="${id}" min="${o.min}" max="${o.max}" step="${o.step||1}" value="0" aria-label="${esc(o.n)}">
+    <button class="step" type="button" data-k="${kind}" data-id="${id}" data-d="1" aria-label="Lisää">+</button>
+    <output class="val" id="v-${id}">0</output></div>`;
+}
+function tagsHtml(w){ return w&&w.length? `<div class="tags">${w.map(k=>`<span class="tag">${WHO[k]}</span>`).join("")}</div>`:""; }
+function buildExp(){
+  let html=""; let cur=null;
+  EXP.forEach(i=>{
+    if(i.g!==cur){ if(cur) html+="</div>"; cur=i.g; const G=GROUPS[i.g];
+      const sum=EXP.filter(x=>x.g===i.g).reduce((s,x)=>s+x.b,0);
+      html+=`<div class="group"><div class="group-h"><span class="dot" style="background:${G.c}"></span>${G.n}<span class="sum">${fmt(sum)}</span></div>`; }
+    html+=`<div class="item" id="row-${i.id}">
+      <div class="item-head"><span class="name">${esc(i.n)}</span><span class="base">${fmt(i.b)}</span><button class="info" type="button" data-note="${i.id}" aria-label="Lisätietoa">i</button></div>
+      ${i.lock? `<div class="locked">🔒 ${esc(i.lock)}</div>` : stepper(i.id,"e",{min:i.min,max:i.max,step:1,n:i.n})}
+      <div class="item-foot"><span>Säästö: <span class="eff" id="e-${i.id}">±0 M€</span></span><span id="n-${i.id}">uusi taso ${fmt(i.b)}</span></div>
+      <div class="note" id="note-${i.id}" hidden>${esc(i.t)}${tagsHtml(i.who)}</div></div>`;
+  });
+  html+="</div>";
+  $("#expList").innerHTML=html;
+  $("#legExp").innerHTML=Object.values(GROUPS).map(g=>`<span><i style="background:${g.c}"></i>${g.n}</span>`).join("");
+}
+function buildRev(){
+  const byCat={}; LEV.forEach(l=>{ (byCat[l.cat]=byCat[l.cat]||[]).push(l); });
+  let html=""; let cur=null;
+  REV.forEach(c=>{
+    if(c.g!==cur){ if(cur) html+="</div>"; cur=c.g; const G=REVG[c.g]; const sum=REV.filter(x=>x.g===c.g).reduce((s,x)=>s+x.b,0);
+      html+=`<div class="group"><div class="group-h"><span class="dot" style="background:${G.c}"></span>${G.n}<span class="sum">${fmt(sum)}</span></div>`; }
+    const levs=byCat[c.id]||[];
+    if(!levs.length){
+      html+=`<div class="item" id="row-${c.id}"><div class="item-head"><span class="name">${esc(c.n)}</span><span class="base">${fmt(c.b)}</span></div><div class="locked">Ei säädettävissä tässä pelissä.</div></div>`;
+    } else levs.forEach((l,ix)=>{
+      html+=`<div class="item" id="row-${l.id}" data-cat="${c.id}">
+        <div class="item-head"><span class="name">${esc(l.n)}</span><span class="base">${ix===0?("tuotto "+fmt(c.b)):""}</span><button class="info" type="button" data-note="${l.id}" aria-label="Lisätietoa">i</button></div>
+        <div class="rule">${esc(l.now)} · ${esc(l.rule)}</div>
+        ${stepper(l.id,"r",l)}
+        <div class="item-foot"><span>Tulovaikutus: <span class="eff" id="e-${l.id}">±0 M€</span></span><span id="n-${l.id}"></span></div>
+        <div class="note" id="note-${l.id}" hidden>${esc(l.t)}${tagsHtml(l.who)}</div></div>`;
+    });
+  });
+  html+="</div>";
+  $("#revList").innerHTML=html;
+  const leg=Object.values(REVG).map(g=>`<span><i style="background:${g.c}"></i>${g.n}</span>`).join("");
+  $("#legRev2").innerHTML=leg;
+  $("#legRev").innerHTML=leg+`<span><i class="hatch"></i>Velanotto</span>`;
+}
+function buildPresets(){
+  $("#presets").innerHTML=PRESETS.map((p,ix)=>`<button class="preset" type="button" data-p="${ix}"><span class="pe" id="pe-${ix}"></span><b>${esc(p.n)}</b><span>${esc(p.d)}</span></button>`).join("");
+}
+function cheeseVal(i,p){ return -Math.min(p.cheese,-i.min); }
+function presetEffect(p){
+  if(p.cheese){ return EXP.reduce((s,i)=>s+(i.lock?0:-i.b*cheeseVal(i,p)/100),0); }
+  let s=0; const e=p.s.e||{}, r=p.s.r||{};
+  for(const k in e){ const i=EXP.find(x=>x.id===k); s+=-i.b*e[k]/100; }
+  for(const k in r){ const l=LEV.find(x=>x.id===k); s+= l.unit==="pp"? r[k]*l.per : l.unit==="pct"? l.base*r[k]/100*l.factor : r[k]; }
+  return s;
+}
+function presetOn(p){
+  if(p.cheese) return EXP.every(i=>i.lock || (state.e[i.id]||0)===cheeseVal(i,p));
+  const e=p.s.e||{}, r=p.s.r||{};
+  return Object.keys(e).every(k=>(state.e[k]||0)===e[k]) && Object.keys(r).every(k=>(state.r[k]||0)===r[k]);
+}
+function togglePreset(ix){
+  const p=PRESETS[ix]; const on=presetOn(p);
+  if(p.cheese){ EXP.forEach(i=>{ if(!i.lock){ if(on) delete state.e[i.id]; else state.e[i.id]=cheeseVal(i,p); } }); }
+  else { const e=p.s.e||{}, r=p.s.r||{};
+    for(const k in e){ if(on) delete state.e[k]; else state.e[k]=e[k]; }
+    for(const k in r){ if(on) delete state.r[k]; else state.r[k]=r[k]; } }
+  syncInputs(); update(); toast(on? "Valinta peruttu" : "Lisätty: "+p.n);
+}
+function buildSources(){
+  $("#sources").innerHTML=SOURCES.map(s=>`<li>${esc(s[0])}<br><a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[1])}</a></li>`).join("");
+}
+function buildTicks(){
+  $("#ticks").innerHTML=[0,4,8,11,14].map(v=>`<span style="left:${v===14?100:Math.max(2,v/14*100)}%">${v}${v===14?" mrd":""}</span>`).join("");
+  const z=$("#zone"); z.style.left=(T_MIN/SCALE_MAX*100)+"%"; z.style.width=((T_MAX-T_MIN)/SCALE_MAX*100)+"%";
+}
+
+/* ====== TREEMAP (squarified) ====== */
+function worst(row, s){ let sum=0,mx=0,mn=Infinity; row.forEach(r=>{sum+=r.a; mx=Math.max(mx,r.a); mn=Math.min(mn,r.a);}); return Math.max(s*s*mx/(sum*sum), (sum*sum)/(s*s*mn)); }
+function squarify(items, W, H){
+  const total=items.reduce((s,i)=>s+i.v,0); const arr=items.slice().sort((a,b)=>b.v-a.v).map(i=>Object.assign({},i,{a:i.v*W*H/total}));
+  const out=[]; const r={x:0,y:0,w:W,h:H};
+  while(arr.length){
+    const s=Math.min(r.w,r.h); let row=[], best=Infinity;
+    while(arr.length){ const cand=row.concat([arr[0]]); const wv=worst(cand,s); if(row.length && wv>best) break; row=cand; best=wv; arr.shift(); }
+    const sum=row.reduce((t,i)=>t+i.a,0);
+    if(r.w>=r.h){ const cw=sum/r.h; let yy=r.y; row.forEach(i=>{ const hh=i.a/cw; out.push(Object.assign(i,{x:r.x,y:yy,w:cw,h:hh})); yy+=hh; }); r.x+=cw; r.w-=cw; }
+    else { const rh=sum/r.w; let xx=r.x; row.forEach(i=>{ const ww=i.a/rh; out.push(Object.assign(i,{x:xx,y:r.y,w:ww,h:rh})); xx+=ww; }); r.y+=rh; r.h-=rh; }
+  }
+  return out;
+}
+function drawTreemap(el, items){
+  const W=el.clientWidth; if(!W) return; const H=Math.round(W<520? W*1.15 : W*0.52); el.style.height=H+"px";
+  const tiles=squarify(items,W,H);
+  el.innerHTML=tiles.map(t=>{
+    const big=t.w>84&&t.h>44, mid=t.w>46&&t.h>22;
+    const ch=Math.round(t.ch||0); const cutH=Math.min(100,Math.abs(ch));
+    return `<div class="tile${t.dark?" dark":""}" data-go="${t.go}" title="${esc(t.n)}: ${fmt(t.nv)}${ch?(" ("+(ch>0?"+":"−")+Math.abs(ch)+" %)"):""}" style="left:${t.x/W*100}%;top:${t.y/H*100}%;width:${t.w/W*100}%;height:${t.h/H*100}%;background:${t.c}">`+
+      (ch?`<div class="cut${ch>0?" up":""}" style="height:${cutH}%"></div>`:"")+
+      (mid?`<span class="n">${esc(big?t.n:t.s)}</span>`:"")+(big?`<span class="a">${fmt(t.nv)}</span>`:"")+
+      (ch&&mid?`<span class="badge">${ch>0?"+":"−"}${Math.abs(ch)} %</span>`:"")+`</div>`;
+  }).join("");
+}
+function short(n){ return n.split(/[,(:]/)[0].trim(); }
+function drawTreemaps(){
+  if(!$("#p-menot").hidden) drawTreemap($("#tmExp"), EXP.map(i=>{ const G=GROUPS[i.g]; const v=state.e[i.id]||0; return {v:i.b,nv:i.b*(1+v/100),n:i.n,s:short(i.n),c:G.c,dark:G.dark,ch:v,go:i.id}; }));
+  if(!$("#p-tulot").hidden) drawTreemap($("#tmRev"), REV.map(c=>{ const G=REVG[c.g]; const d=catEff(c.id); const levs=LEV.filter(l=>l.cat===c.id);
+    return {v:c.b,nv:c.b+d,n:c.n,s:short(c.n),c:G.c,ch: d? Math.max(-100,Math.min(100,d/c.b*100)) : 0,go:levs.length?levs[0].id:c.id}; }));
+}
+
+/* ====== UPDATE ====== */
+let lastZone=null;
+function update(){
+  const T=totals();
+  EXP.forEach(i=>{ const v=state.e[i.id]||0, s=expSave(i);
+    const o=$("#v-"+i.id); if(o) o.textContent=pctTxt(v,"pct");
+    const e=$("#e-"+i.id); e.textContent=sfmt(s); e.className="eff "+(s>0.5?"pos":s<-0.5?"negc":"");
+    $("#n-"+i.id).textContent="uusi taso "+fmt(i.b-s);
+    $("#row-"+i.id).classList.toggle("changed",!!v);
+    paintRange(document.querySelector(`input[data-id="${i.id}"]`));
+  });
+  LEV.forEach(l=>{ const v=state.r[l.id]||0, s=levEff(l);
+    $("#v-"+l.id).textContent=pctTxt(v,l.unit);
+    const e=$("#e-"+l.id); e.textContent=sfmt(s); e.className="eff "+(s>0.5?"pos":s<-0.5?"negc":"");
+    const c=REV.find(x=>x.id===l.cat);
+    $("#n-"+l.id).textContent="uusi tuotto "+fmt(c.b+catEff(l.cat));
+    $("#row-"+l.id).classList.toggle("changed",!!v);
+    paintRange(document.querySelector(`input[data-id="${l.id}"]`));
+  });
+  // meter
+  $("#total").innerHTML=(T.total<-0.5?"−":"")+fmt(Math.abs(T.total))+` <small>${T.total<-0.5?"lisää alijäämää":"säästöä"}</small>`;
+  const f=$("#fill"); f.style.width=Math.max(0,Math.min(100,T.total/SCALE_MAX*100))+"%";
+  const st=$("#status"); let zone;
+  if(T.total<-0.5){ zone="neg"; st.textContent=`Muutoksesi kasvattavat alijäämää ${fmt(-T.total)}. Velkajarruun tarvitaan vähintään ${fmt(T_MIN)} säästöjä.`; f.style.background="var(--bad)"; }
+  else if(T.total<T_MIN){ zone="low"; st.textContent=`Velkajarruun puuttuu vielä ${fmt(T_MIN-T.total)}.`; f.style.background="var(--warn)"; }
+  else if(T.total<=T_MAX){ zone="win"; st.textContent=`🎉 Velkajarru saavutettu! Sopeutus ${fmt(T.total)} osuu tavoitealueelle 8–11 mrd €.`; f.style.background="var(--good)"; }
+  else { zone="over"; st.textContent=`Velkajarru ylittyi ${fmt(T.total-T_MAX)}:lla. Tavoite täyttyy, mutta näin suuri kertasopeutus voi heikentää talouskasvua ja työllisyyttä.`; f.style.background="var(--over)"; }
+  st.className="status"+(zone==="win"?" win":zone==="over"?" over":zone==="neg"?" neg":"");
+  if(zone==="win" && lastZone!==null && lastZone!=="win") celebrate();
+  lastZone=zone;
+  $("#kExp").textContent=sfmt(T.es);
+  $("#kRev").textContent=sfmt(T.ra);
+  $("#kDef").textContent=nf2.format(BASE_DEF/1000)+" → "+(T.def<0?"ylijäämä "+nf2.format(-T.def/1000):nf2.format(T.def/1000))+" mrd €";
+  $("#kShare").textContent=nf1.format(T.abs/BASE_EXP*100)+" %";
+  $("#kTotExp").textContent=fmt(T.newExp);
+  $("#kInt").textContent=sfmt(T.total*0.03)+" / v";
+  const oo=$("#oneoff"); if(T.oo>0){ oo.hidden=false; oo.textContent=`Huom: ${fmt(T.oo)} on kertaluonteisia tuloja (osakemyynti). Ne eivät pienennä alijäämää pysyvästi – rakenteellinen sopeutus on ${fmt(T.total-T.oo)}.`; } else oo.hidden=true;
+  drawBalance(T); drawTreemaps(); drawWho(); drawEffects(T);
+  PRESETS.forEach((p,ix)=>{ const b=document.querySelector(`.preset[data-p="${ix}"]`); b.classList.toggle("on",presetOn(p)); const e=presetEffect(p); const pe=$("#pe-"+ix); pe.textContent=sfmt(e); pe.className="pe"+(e<0?" neg":""); });
+  save(); setMeterH();
+}
+function paintRange(inp){
+  if(!inp) return; const mn=+inp.min, mx=+inp.max, v=+inp.value; if(mx===mn) return;
+  const z=(0-mn)/(mx-mn)*100, p=(v-mn)/(mx-mn)*100; const a=Math.min(z,p), b=Math.max(z,p);
+  const good = inp.dataset.k==="e"? v<0 : v>0;
+  const col = v===0? "#dfe5ee" : (good? "#1b9e5a" : "#c62828");
+  inp.style.setProperty("--trk",`linear-gradient(90deg,#dfe5ee ${a}%,${col} ${a}%,${col} ${b}%,#dfe5ee ${b}%)`);
+}
+function drawBalance(T){
+  const def=Math.max(0,T.def);
+  const scale=Math.max(BASE_EXP,T.newExp,T.newRev+def);
+  const gs={}; EXP.forEach(i=>{ gs[i.g]=(gs[i.g]||0)+i.b-expSave(i); });
+  $("#barExp").innerHTML=Object.keys(GROUPS).map(g=>`<div class="seg" title="${esc(GROUPS[g].n)}: ${fmt(gs[g])}" style="width:${gs[g]/scale*100}%;background:${GROUPS[g].c}"></div>`).join("")+`<div class="ghost" style="left:0;width:${BASE_EXP/scale*100}%"></div>`;
+  const rg={}; REV.forEach(c=>{ rg[c.g]=(rg[c.g]||0)+c.b+catEff(c.id); });
+  $("#barRev").innerHTML=Object.keys(REVG).map(g=>`<div class="seg" title="${esc(REVG[g].n)}: ${fmt(rg[g])}" style="width:${rg[g]/scale*100}%;background:${REVG[g].c}"></div>`).join("")+
+    (def>0?`<div class="seg hatch" title="Velanotto: ${fmt(def)}" style="width:${def/scale*100}%"></div>`:"")+`<div class="ghost" style="left:0;width:${BASE_REV/scale*100}%"></div>`;
+  $("#bExp").textContent=fmt(T.newExp);
+  $("#bRev").textContent=fmt(T.newRev)+(def>0?" + velkaa "+fmt(def):" (ylijäämä "+fmt(-T.def)+")");
+}
+function changes(){
+  const list=[];
+  EXP.forEach(i=>{ const v=state.e[i.id]||0; if(v) list.push({n:i.n,s:expSave(i),lab:pctTxt(v,"pct"),t:i.t,who:i.who,kind:"Meno",id:i.id}); });
+  LEV.forEach(l=>{ const v=state.r[l.id]||0; if(v) list.push({n:l.n,s:levEff(l),lab:pctTxt(v,l.unit),t:l.t,who:l.who,kind:"Vero/tulo",oneoff:l.oneoff,id:l.id}); });
+  return list.sort((a,b)=>Math.abs(b.s)-Math.abs(a.s));
+}
+function drawWho(){
+  const acc={}; changes().forEach(c=>{ if(c.oneoff||!c.who.length) return; const part=c.s/c.who.length; c.who.forEach(w=>{acc[w]=(acc[w]||0)+part;}); });
+  const rows=Object.entries(acc).filter(x=>Math.abs(x[1])>=1).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
+  if(!rows.length){ $("#whoBox").innerHTML=`<p class="empty">Tee muutoksia, niin näet täällä, mihin ryhmiin ne kohdistuvat.</p>`; return; }
+  const mx=Math.max(...rows.map(r=>Math.abs(r[1])));
+  $("#whoBox").innerHTML=rows.map(([k,v])=>`<div class="who-row"><span>${WHO[k]}</span><div class="who-bar"><i style="width:${Math.abs(v)/mx*100}%;background:${v>0?"#e08a00":"#1b9e5a"}"></i></div><span class="wv">${v>0?"−":"+"}${fmt(Math.abs(v))}</span></div>`).join("")+
+   `<p class="rule">Oranssi = ryhmältä pois (leikkaus tai veronkorotus), vihreä = ryhmälle lisää (lisäys tai veronalennus).</p>`;
+}
+function drawEffects(T){
+  const list=changes(); const box=$("#effBox");
+  if(!list.length){ box.innerHTML=`<p class="empty">Et ole vielä tehnyt muutoksia. Aloita Menot-, Tulot ja verot- tai Pikavalinnat-välilehdeltä.</p>`; return; }
+  const warns=[];
+  if((state.e.hva||0)<=-5) warns.push("Hyvinvointialueiden rahoituksen yli 5 %:n leikkaus vastaa yli 1,3 mrd €:a. Alueilla on lakisääteinen velvollisuus järjestää palvelut, joten leikkaus edellyttäisi palvelulupausten muuttamista.");
+  if((state.e.puolustus||0)<=-10) warns.push("Puolustusmenojen leikkaus olisi ristiriidassa Suomen Nato-sitoumusten kanssa, ja moni hankinta on jo sopimuksiin sidottu.");
+  if((state.r.alvy||0)+(state.r.alva||0)>=2) warns.push("Arvonlisäveron korotukset nostavat kuluttajahintoja ja heikentävät ostovoimaa. Ne kohdistuvat tuloihin suhteutettuna eniten pienituloisiin.");
+  if((state.r.ansiovero||0)>=2) warns.push("Ansiotuloverotuksen kiristys usealla prosenttiyksiköllä voi heikentää työnteon kannustimia. Todellinen tuotto jäisi staattista arviota pienemmäksi.");
+  if(["asumistuki","toimeentulo","tyottomyys","perhe","kansanelake"].some(k=>(state.e[k]||0)<=-15)) warns.push("Sosiaaliturvan suuret leikkaukset kohdistuvat pienituloisiin. Osa säästöstä voi siirtyä viimesijaisen toimeentulotuen menoiksi.");
+  if(T.oo>0) warns.push("Osakemyynnit ovat kertaluonteisia: ne kattavat yhden vuoden alijäämää, mutta seuraavana vuonna aukko on taas edessä ja osinkotulot pienemmät.");
+  if(T.total>T_MAX) warns.push("Sopeutus ylittää Velkajarru-tavoitteen. Suuret leikkaukset ja veronkorotukset samanaikaisesti voivat heikentää kysyntää ja talouskasvua lyhyellä aikavälillä.");
+  if(T.total>0 && T.es>0 && T.ra>0) warns.push(`Sopeutuksesi jakautuu: menosäästöt ${nf0.format(T.es/T.total*100)} % ja tulolisäykset ${nf0.format(T.ra/T.total*100)} %.`);
+  box.innerHTML=`<div class="kpis" style="margin-top:0">
+     <div class="kpi"><div class="k">Sopeutus yhteensä</div><div class="v">${sfmt(T.total)}</div></div>
+     <div class="kpi"><div class="k">Alijäämä</div><div class="v">${fmt(BASE_DEF)} → ${T.def<0?"ylijäämä "+fmt(-T.def):fmt(T.def)}</div></div></div>
+   ${warns.map(w=>`<div class="warnbox">${esc(w)}</div>`).join("")}
+   <h3>Muutokset suuruusjärjestyksessä</h3>
+   <ul class="eff-list">${list.map(c=>`<li><div class="r1"><span>${esc(c.n)} <span class="tag">${c.kind}: ${esc(c.lab)}</span></span><span class="${c.s>=0?"pos":"negc"}">${sfmt(c.s)}</span></div>
+     <div class="r2">${esc(c.t)}</div>${tagsHtml(c.who)}</li>`).join("")}</ul>
+   <p class="rule">Plus = parantaa budjettitasapainoa (säästö tai lisätulo), miinus = heikentää.</p>`;
+}
+function celebrate(){
+  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const em=["🎉","💶","✨","🎊","⭐"];
+  for(let k=0;k<28;k++){ const s=document.createElement("span"); s.className="confetti"; s.textContent=em[k%em.length];
+    s.style.left=Math.random()*100+"vw"; s.style.animationDelay=(Math.random()*0.6)+"s"; document.body.appendChild(s); setTimeout(()=>s.remove(),3600); }
+}
+
+/* ====== EVENTS ====== */
+function setVal(kind,id,v){
+  const o = kind==="e"? EXP.find(x=>x.id===id) : LEV.find(x=>x.id===id);
+  v=Math.max(o.min,Math.min(o.max,Math.round(v*100)/100));
+  const bag = kind==="e"? state.e : state.r; if(v) bag[id]=v; else delete bag[id];
+  const inp=document.querySelector(`input[data-id="${id}"]`); if(inp) inp.value=v;
+}
+function syncInputs(){ document.querySelectorAll("input[type=range]").forEach(inp=>{ const bag=inp.dataset.k==="e"?state.e:state.r; inp.value=bag[inp.dataset.id]||0; }); }
+let raf=null;
+document.addEventListener("input",ev=>{ const t=ev.target; if(t.matches("input[type=range]")){ setVal(t.dataset.k,t.dataset.id,+t.value); if(!raf) raf=requestAnimationFrame(()=>{raf=null; update();}); } });
+document.addEventListener("click",ev=>{
+  const st=ev.target.closest(".step");
+  if(st){ const inp=document.querySelector(`input[data-id="${st.dataset.id}"]`); if(!inp) return; setVal(st.dataset.k,st.dataset.id,(+inp.value)+(+st.dataset.d)*(+inp.step||1)); update(); return; }
+  const inf=ev.target.closest(".info"); if(inf){ const n=$("#note-"+inf.dataset.note); n.hidden=!n.hidden; return; }
+  const tile=ev.target.closest(".tile"); if(tile){ goTo(tile.dataset.go); return; }
+  const pr=ev.target.closest(".preset"); if(pr){ togglePreset(+pr.dataset.p); return; }
+  const tab=ev.target.closest(".tab"); if(tab){ showTab(tab.dataset.tab); return; }
+});
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===name?"true":"false"));
+  document.querySelectorAll(".panel").forEach(p=>p.hidden = p.id!=="p-"+name);
+  drawTreemaps();
+}
+function goTo(id){
+  const row=$("#row-"+id); if(!row) return;
+  const panel=row.closest(".panel"); showTab(panel.id.slice(2));
+  const mh=window.innerWidth<960? $("#meter").offsetHeight : 0;
+  const y=row.getBoundingClientRect().top+window.scrollY-mh-64;
+  window.scrollTo({top:y,behavior:"smooth"});
+  row.classList.add("flash"); setTimeout(()=>row.classList.remove("flash"),1400);
+  const n=$("#note-"+id); if(n) n.hidden=false;
+}
+$("#resetBtn").addEventListener("click",()=>{ if(!confirm("Nollataanko kaikki muutokset?")) return; state={e:{},r:{}}; syncInputs(); lastZone=null; update(); toast("Peli nollattu"); });
+$("#moreBtn").addEventListener("click",()=>{ const m=$("#meter"); m.classList.toggle("expanded"); $("#moreBtn").textContent=m.classList.contains("expanded")?"Piilota lisätiedot ▴":"Näytä lisätiedot ▾"; setMeterH(); });
+function shareText(){
+  const T=totals(); const L=changes();
+  let s=`Budjettipeli – valtion talousarvio 2026\n`;
+  s+= (T.total>=T_MIN&&T.total<=T_MAX)? `✅ Velkajarru saavutettu: sopeutus ${fmt(T.total)} (tavoite 8–11 mrd €)\n` : T.total>T_MAX? `⚠️ Velkajarru ylittyi: sopeutus ${fmt(T.total)} (tavoite 8–11 mrd €)\n` : `⏳ Sopeutus ${fmt(T.total)} – Velkajarruun (8–11 mrd €) puuttuu ${fmt(T_MIN-T.total)}\n`;
+  s+=`Menosäästöt ${fmt(T.es)}, tulojen lisäys ${fmt(T.ra)}\nAlijäämä ${fmt(BASE_DEF)} → ${T.def<0?"ylijäämä "+fmt(-T.def):fmt(T.def)}\n`;
+  if(L.length){ s+=`\nToimet:\n`+L.map(c=>`• ${c.n}: ${c.lab} (${sfmt(c.s)})`).join("\n"); }
+  return s;
+}
+$("#shareBtn").addEventListener("click",async()=>{
+  const txt=shareText();
+  if(navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)){ try{ await navigator.share({title:"Budjettipeli",text:txt}); return; }catch(e){} }
+  $("#shareText").value=txt; $("#modal").hidden=false;
+});
+$("#copyBtn").addEventListener("click",async()=>{
+  const ta=$("#shareText"); let ok=false;
+  try{ await navigator.clipboard.writeText(ta.value); ok=true; }catch(e){ ta.select(); try{ ok=document.execCommand("copy"); }catch(e2){} }
+  toast(ok?"Kopioitu leikepöydälle":"Valitse teksti ja kopioi käsin");
+});
+$("#closeModal").addEventListener("click",()=>{ $("#modal").hidden=true; });
+$("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") $("#modal").hidden=true; });
+function setMeterH(){ document.documentElement.style.setProperty("--meterH", (window.innerWidth<960? $("#meter").offsetHeight : 0)+"px"); }
+let rT=null; window.addEventListener("resize",()=>{ clearTimeout(rT); rT=setTimeout(()=>{ drawTreemaps(); setMeterH(); },120); });
+
+/* ====== INIT ====== */
+load(); buildExp(); buildRev(); buildPresets(); buildSources(); buildTicks(); syncInputs(); update();
+window.__budjetti={totals,getState:()=>state,EXP,LEV,REV};
+</script>
+</body>
+</html>
