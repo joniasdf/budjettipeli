@@ -212,19 +212,17 @@ footer{max-width:1280px;margin:0 auto;padding:6px 16px 30px;font-size:12.5px;col
 .sublist li span:last-child{white-space:nowrap;font-weight:700}
 @media (max-width:420px){ .num{width:58px;padding:0 5px} .ctrl{gap:6px} .ctrl.sm .num{width:54px} }
 
-header .btn.grokbtn{background:#ffd54f;border-color:#ffd54f;color:#1a2a44;font-weight:800}
-header .btn.grokbtn:hover{background:#ffe082}
-.grokcard{background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:12px 14px;margin:14px 0}
-.grokcard p{margin:6px 0 10px;font-size:14px}
-.modal.grok .box{max-width:760px;padding:0;display:flex;flex-direction:column}
+.aicard{background:#f3f7fd;border:1px solid #c9d8ee;border-radius:12px;padding:12px 14px;margin:14px 0}
+.aicard p{margin:6px 0 10px;font-size:14px}
+.modal.pkg .box{max-width:760px;padding:0;display:flex;flex-direction:column}
 .gm-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:1;border-radius:16px 16px 0 0}
 .gm-head h2{margin:0;font-size:20px;flex:1}
 .gm-x{border:none;background:#eef2f7;border-radius:50%;width:34px;height:34px;font-size:22px;line-height:1;flex:none}
-#grokBody{padding:4px 16px 8px;font-size:14.5px}
-#grokBody h3{margin:16px 0 6px;font-size:16px}
-#grokBody .lead{color:var(--muted);margin:10px 0}
-#grokBody ul.pr{margin:0;padding-left:20px}
-#grokBody ul.pr li{margin:4px 0}
+#pkgBody{padding:4px 16px 8px;font-size:14.5px}
+#pkgBody h3{margin:16px 0 6px;font-size:16px}
+#pkgBody .lead{color:var(--muted);margin:10px 0}
+#pkgBody ul.pr{margin:0;padding-left:20px}
+#pkgBody ul.pr li{margin:4px 0}
 .gm-list{list-style:none;margin:0;padding:0}
 .gm-list li{padding:8px 0;border-bottom:1px solid var(--line)}
 .gm-list .r1{display:flex;justify-content:space-between;gap:10px;font-weight:700}
@@ -239,7 +237,20 @@ header .btn.grokbtn:hover{background:#ffe082}
 .gm-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid var(--line);position:sticky;bottom:0;background:#fff;border-radius:0 0 16px 16px}
 .btn.primary{background:var(--brand2);border-color:var(--brand2);color:#fff}
 .btn.primary:hover{background:#1d4f91}
-@media (max-width:520px){ .modal.grok{padding:0;align-items:stretch} .modal.grok .box{max-height:100vh;height:100%;border-radius:0} .gm-head,.gm-actions{border-radius:0} .gm-actions .btn{flex:1 1 auto} .gm-sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (max-width:520px){ .modal.pkg{padding:0;align-items:stretch} .modal.pkg .box{max-height:100vh;height:100%;border-radius:0} .gm-head,.gm-actions{border-radius:0} .gm-actions .btn{flex:1 1 auto} .gm-sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+#aiBody{padding:4px 16px 16px;font-size:14.5px}
+#aiBody .lead{color:var(--muted);margin:10px 0 12px}
+.modal.chooser .box{max-width:560px}
+.ai-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ai-item{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ai-item .ai-name{font-weight:800;font-size:16px}
+.ai-item .ai-meta{color:var(--muted);font-size:13px;flex:1 1 180px;min-width:0}
+.ai-item .ai-acts{display:flex;gap:8px;flex-wrap:wrap}
+.ai-item.soon{background:#f6f7f9;color:var(--muted)}
+.ai-item.soon .ai-name{color:#7a8597}
+.soon-tag{font-size:12px;font-weight:700;background:#e3e7ee;color:#56627a;border-radius:999px;padding:3px 9px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+@media (max-width:520px){ .modal.chooser .box{height:auto;max-height:100vh} .modal.chooser{align-items:flex-start} }
 </style>
 </head>
 <body>
@@ -252,7 +263,7 @@ header .btn.grokbtn:hover{background:#ffe082}
     <div class="hbtns">
       <button class="btn" id="shareBtn" type="button">Jaa tulos</button>
       <button class="btn" id="resetBtn" type="button">Aloita alusta</button>
-      <button class="btn grokbtn" id="grokBtn" type="button" aria-haspopup="dialog">✨ Grokin valinta</button>
+      <button class="btn" id="aiBtn" type="button" aria-haspopup="dialog">AI-valinta</button>
     </div>
   </div>
 </header>
@@ -356,7 +367,7 @@ header .btn.grokbtn:hover{background:#ffe082}
           <li>Päämittari näyttää budjetin tasapainon: vasemmalla alijäämä (lähtötilanne −9,37 mrd €, katkoviiva), keskellä <b>Tasapaino 0</b> ja oikealla ylijäämä. Vihreä raidoitettu alue on Velkajarru-tavoite, eli 8–11 mrd €:n säästöillä tasapaino on noin −1,37 … +1,63 mrd €. Asteikko laajenee automaattisesti suurilla muutoksilla, ja nuoli ◀/▶ kertoo, jos arvo menee asteikon ulkopuolelle.</li>
           <li>Pikavalinnat lisäävät valmiin muutoksen nykyisten valintojesi päälle; uusi napautus poistaa sen. Valintasi tallentuvat selaimeesi automaattisesti. ”Jaa tulos” kopioi yhteenvedon, ”Aloita alusta” nollaa kaiken.</li>
         </ol>
-        <div class="grokcard"><h3 style="margin-top:0">✨ Grokin valinta</h3><p>Grokin esimerkkipaketti (noin 9,4 mrd €) yhdistää maltillisia menosäästöjä moneen kohteeseen ja tulojen lisäyksiä kasvulle vähemmän haitallisista veropohjista. Voit lukea perustelut ja ottaa paketin käyttöön, minkä jälkeen voit jatkaa säätämistä.</p><button class="btn" id="grokInfoBtn" type="button">Lue Grokin valinnan perustelut</button></div>
+        <div class="aicard"><h3 style="margin-top:0">AI-valinta</h3><p>AI-valinta näyttää tekoälyjen laatimia esimerkkipaketteja Velkajarrun saavuttamiseksi. Nyt saatavilla on <b>Grokin valinta</b> (noin 9,4 mrd €): maltillisia menosäästöjä moneen kohteeseen ja tulojen lisäyksiä kasvulle vähemmän haitallisista veropohjista. Muiden mallien (Gemini, OpenAI, Anthropic) paketit ovat tulossa. Voit lukea perustelut ja ottaa paketin käyttöön, minkä jälkeen voit jatkaa säätämistä.</p><button class="btn" id="aiInfoBtn" type="button">Avaa AI-valinta</button></div>
         <h3>Oletukset ja rajoitukset</h3>
         <ul class="src">
           <li>Luvut ovat <b>eduskunnan hyväksymästä valtion talousarviosta vuodelle 2026</b> (Suomen säädöskokoelma 1329/2025, julkaistu 23.12.2025). Alakohdat on poimittu samasta asiakirjasta momentti- tai lukutasolla. Vuoden 2026 I lisätalousarvioesitys nostaisi nettolainanoton arviota noin 10,8 mrd euroon; peli käyttää varsinaista talousarviota.</li>
@@ -366,7 +377,7 @@ header .btn.grokbtn:hover{background:#ffe082}
           <li>Monet menot ovat lakisääteisiä tai sopimusperusteisia (esim. eläkkeet, Kela-etuudet, hyvinvointialueiden rahoitus, EU-maksut, valtionvelan korot). Niitäkin voi pelissä säätää, mutta muutettaessa näytetään varoitus: todellisuudessa ne vaatisivat lakimuutoksia tai eivät ole talousarviossa päätettävissä.</li>
           <li>Osinko- ja osakemyyntitulojen lisäys katsotaan kertaluonteiseksi osakemyynniksi, eikä se korjaa rakenteellista alijäämää.</li>
           <li>*Korkosäästö: jos velanotto pienenee, tulevat korkomenot pienenevät. Arvio olettaa 3 %:n keskikoron.</li>
-          <li>Peli on puolueeton harjoitus, eikä se suosittele mitään toimia. ”Grokin valinta” on Grokin oma, perusteltu esimerkki, ei ainoa oikea ratkaisu. Kuvaukset vaikutuksista ovat yleisluontoisia.</li>
+          <li>Peli on puolueeton harjoitus, eikä se suosittele mitään toimia. AI-valinnan paketit (esim. ”Grokin valinta”) ovat tekoälyjen laatimia, perusteltuja esimerkkejä, eivät ainoita oikeita ratkaisuja. Kuvaukset vaikutuksista ovat yleisluontoisia.</li>
         </ul>
         <h3>Lähteet</h3>
         <ol class="src" id="sources"></ol>
@@ -388,15 +399,21 @@ header .btn.grokbtn:hover{background:#ffe082}
     </div>
   </div>
 </div>
-<div class="modal grok" id="grokModal" hidden role="dialog" aria-modal="true" aria-labelledby="grokTitle">
+<div class="modal pkg" id="pkgModal" hidden role="dialog" aria-modal="true" aria-labelledby="pkgTitle">
   <div class="box">
-    <div class="gm-head"><h2 id="grokTitle">Grokin valinta</h2><button class="gm-x" id="grokClose" type="button" aria-label="Sulje">×</button></div>
-    <div id="grokBody"></div>
+    <div class="gm-head"><h2 id="pkgTitle">AI-valinta</h2><button class="gm-x" id="pkgClose" type="button" aria-label="Sulje">×</button></div>
+    <div id="pkgBody"></div>
     <div class="gm-actions">
-      <button class="btn primary" id="grokApply" type="button">Ota Grokin valinta käyttöön</button>
-      <button class="btn" id="grokEffects" type="button">Näytä vaikutukset</button>
-      <button class="btn" id="grokClose2" type="button">Sulje ja jatka säätämistä</button>
+      <button class="btn primary" id="pkgApply" type="button">Ota käyttöön</button>
+      <button class="btn" id="pkgEffects" type="button">Näytä vaikutukset</button>
+      <button class="btn" id="pkgClose2" type="button">Sulje ja jatka säätämistä</button>
     </div>
+  </div>
+</div>
+<div class="modal pkg chooser" id="aiModal" hidden role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+  <div class="box">
+    <div class="gm-head"><h2 id="aiTitle">AI-valinta</h2><button class="gm-x" id="aiClose" type="button" aria-label="Sulje">×</button></div>
+    <div id="aiBody"><p class="lead">Valitse tekoälyn laatima esimerkkipaketti. Paketti korvaa nykyiset valintasi, ja voit sen jälkeen jatkaa säätämistä. Paketit ovat esimerkkejä, eivät suosituksia.</p><ul class="ai-list" id="aiList"></ul></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -841,8 +858,11 @@ let rT=null; window.addEventListener("resize",()=>{ clearTimeout(rT); rT=setTime
 /* ====== KÄYNNISTYS ====== */
 load(); buildList("e",$("#expList"),GROUPS); buildList("r",$("#revList"),REVG); buildLegends(); buildPresets(); buildSources(); update();
 window.__budjetti={totals,getState:()=>state,EXP,REV,LINE,LEAF,setLeaf,setLine,lineVal,lineEff,leafEff,update,togglePreset,PRESETS,VMIN,VMAX};
-/* ====== GROKIN VALINTA ====== */
-const GROK = {
+/* ====== AI-VALINTA: tekoälyjen esimerkkipaketit ======
+   Paketin muoto: {id, name, title, available, principles:[teksti], measures:[{k:"e"|"r", t, why, set:[[riviId tai alakohtaId, muutos %], ...]}], notes:[teksti]}
+   k = "e" (meno) tai "r" (tulo); muutos % välillä −100…+200; rivin id asettaa kaikki sen alakohdat. {menot_osuus} korvataan laskennallisella menojen osuudella. */
+const AI_PACKAGES = [
+ {id:"grok", name:"Grok", title:"Grokin valinta", available:true,
   principles:[
     "Sopeutus noin 9,4 mrd €, eli Velkajarru-tavoitealueen (8–11 mrd €) keskivaiheilla. Mukana on vain pysyviä (rakenteellisia) toimia, ei kertaluonteisia osakemyyntejä.",
     "Säästöt hajautetaan monelle riville maltillisina, sen sijaan että yksi kohde ajettaisiin alas. Suurimmissa erissä muutokset ovat pieniä ja vaiheittaisia.",
@@ -851,7 +871,7 @@ const GROK = {
     "Kasvua tukevat menot suojataan: varhaiskasvatus, perus- ja toisen asteen koulutus, yliopistot, ammattikorkeakoulut ja tutkimus.",
     "Pienituloisimpia suojataan: toimeentulotukeen, työttömyyden perusturvaan, kansaneläkkeeseen ja takuueläkkeeseen ei kosketa. Puolustusta (Nato-sitoumukset), valtionvelan korkoja ja EU-maksuja ei leikata.",
   ],
-  m:[
+  measures:[
     {k:"e", t:"Hyvinvointialueet: tuottavuus ja menojen kasvun hillintä (−6 %)", why:"Suurin menoerä. Pieni prosentuaalinen tehostus usean vuoden aikana (tuottavuus, palveluverkko, digitalisaatio, palvelulupausten tarkistus) säästää paljon ilman yksittäisen palvelun alasajoa.", set:[["hva:28.89.31",-6]]},
     {k:"e", t:"Kuntien valtionosuudet (−10 %) ja veroperustemuutosten korvaukset (−20 %)", why:"Maltillinen leikkaus. Kunnilla on oma verotusoikeus ja tehostamisvaraa; koulutuksen valtionosuudet (OKM) jätetään ennalleen.", set:[["kunnat:28.90.30",-10],["kunnat:28.90.35",-20]]},
     {k:"e", t:"Valtion eläkkeet: indeksikorotusten hillintä (−4 %)", why:"Pieni, indeksijäädytyksen kaltainen hillintä jaetaan laajalle, eikä kenenkään eläkettä leikata merkittävästi.", set:[["vkel:28.50.15",-4],["vkel:28.50.63",-4]]},
@@ -874,53 +894,79 @@ const GROK = {
     {k:"r", t:"Perintö- ja lahjavero (+25 %)", why:"Varallisuuden siirtoihin kohdistuvia veroja pidetään kasvun kannalta vähemmän haitallisina kuin työn verotusta.", set:[["muutulo:11.01.04",25]]},
     {k:"r", t:"Verotukien karsinta tuloverotuksessa ja pääomatulot", why:"Tuloverotuksen vähennyksiä ja huojennuksia karsitaan (tuotto +3 % ≈ 0,8 mrd €, eli tuotoltaan noin 0,7 %-yks. asteikkomuutoksen verran) ja korkotulojen lähdeveroa korotetaan (+10 %). Ansiotuloveroasteikkoon ei kosketa.", set:[["ansio",3],["muutulo:11.01.03",10]]},
     {k:"r", t:"Vakuutusmaksu- ja arpajaisvero", why:"Veropohjan laajennus kulutusluonteisissa veroissa: vakuutusmaksuvero +15 % ja arpajaisvero +10 %.", set:[["vakuutus:11.04.02",15],["muutverot:11.10.06",10]]}
+  ],
+  notes:[
+    "Rehellisesti sanottuna tämä on vain yksi esimerkki. Sopeutuksen kohdentaminen on aina arvovalinta: joku painottaisi enemmän menoleikkauksia, joku veroja, joku eri kohteita.",
+    "Luvut ovat staattisia arvioita. Käyttäytymis- ja kasvuvaikutuksia ei ole huomioitu: veronkorotusten todellinen tuotto voi jäädä pienemmäksi, ja leikkaukset voivat lyhyellä aikavälillä heikentää kysyntää. Monet toimet vaatisivat lakimuutoksia, ja ne toteutettaisiin vaiheittain usean vuoden aikana.",
+    "Menojen osuudeksi jäi noin {menot_osuus} %, vaikka tavoitteena oli yli puolet. Suojatut erät muodostavat valtaosan menoista: perusturva, koulutus ja tutkimus, puolustus, korot, EU-maksut ja eläkkeiden ydin. Lisäksi hyvinvointialueiden säästö pidettiin maltillisena. Osa tulopuolen toimista (energiaverotukien, alennettujen ALV-kantojen ja tuloverovähennysten karsinta) on luonteeltaan tukien karsintaa verotuksen kautta."
   ]
-};
-function grokLeaves(m){ const out=[]; m.set.forEach(([id,v])=>{ if(LEAF[m.k][id]) out.push([LEAF[m.k][id],v]); else leaves(LINE[m.k][id]).forEach(x=>out.push([x,v])); }); return out; }
-function grokEff(m){ return grokLeaves(m).reduce((s,[x,v])=>s+(m.k==="e"? -1 : 1)*x.b*v/100,0); }
-function grokTarget(){ const t={e:{},r:{}}; GROK.m.forEach(m=>grokLeaves(m).forEach(([x,v])=>{ t[m.k][x.id]=v; })); return t; }
-function grokApplied(){ const t=grokTarget(); if(Object.keys(state.p).length) return false;
-  for(const k of ["e","r"]){ const a=state[k], b=t[k]; const ka=Object.keys(a), kb=Object.keys(b); if(ka.length!==kb.length) return false; if(kb.some(id=>a[id]!==b[id])) return false; } return true; }
+ },
+ {id:"gemini", name:"Gemini", title:"Geminin valinta", available:false, principles:[], measures:[], notes:[]},
+ {id:"openai", name:"OpenAI", title:"OpenAI:n valinta", available:false, principles:[], measures:[], notes:[]},
+ {id:"anthropic", name:"Anthropic", title:"Anthropicin valinta", available:false, principles:[], measures:[], notes:[]}
+];
+function pkgLeaves(m){ const out=[]; m.set.forEach(([id,v])=>{ if(LEAF[m.k][id]) out.push([LEAF[m.k][id],v]); else leaves(LINE[m.k][id]).forEach(x=>out.push([x,v])); }); return out; }
+function pkgMeasureEff(m){ return pkgLeaves(m).reduce((s,[x,v])=>s+(m.k==="e"? -1 : 1)*x.b*v/100,0); }
+const PKG = Object.fromEntries(AI_PACKAGES.map(p=>[p.id,p]));
+let curPkg = null;
+function pkgTarget(P){ const t={e:{},r:{}}; P.measures.forEach(m=>pkgLeaves(m).forEach(([x,v])=>{ t[m.k][x.id]=v; })); return t; }
+function pkgApplied(P){ const t=pkgTarget(P); if(Object.keys(state.p).length) return false;
+  for(const k of ["e","r"]){ const a=state[k], b=t[k]; if(Object.keys(a).length!==Object.keys(b).length) return false; if(Object.keys(b).some(id=>a[id]!==b[id])) return false; } return true; }
 function hasChanges(){ return Object.keys(state.e).length+Object.keys(state.r).length>0; }
-function grokSums(){ let es=0, ra=0; GROK.m.forEach(m=>{ const v=grokEff(m); if(m.k==="e") es+=v; else ra+=v; }); return {es,ra,tot:es+ra}; }
-function applyGrok(){ const t=grokTarget(); state={e:{},r:{},p:{}}; for(const k of ["e","r"]) for(const id in t[k]) setLeaf(k,id,t[k][id]); update(); }
-function renderGrok(){
-  const S=grokSums(), bal=-(BASE_DEF-S.tot);
-  $("#grokTitle").textContent=`Grokin valinta: n. ${nf1.format(S.tot/1000)} mrd €`;
-  const li=m=>`<li><div class="r1"><span>${esc(m.t)}</span><span>${sfmt(grokEff(m))}</span></div><div class="r2">${esc(m.why)}</div></li>`;
-  const ex=GROK.m.filter(m=>m.k==="e"), rv=GROK.m.filter(m=>m.k==="r");
-  $("#grokBody").innerHTML=`
-   <p class="lead">Tämä on <b>Grokin esimerkki</b> siitä, miten Velkajarru voitaisiin saavuttaa pysyvillä toimilla. Se on yksi mahdollinen tapa, ei ainoa oikea. Kun paketti on käytössä, voit jatkaa säätämistä vapaasti.</p>
+function pkgSums(P){ let es=0, ra=0; P.measures.forEach(m=>{ const v=pkgMeasureEff(m); if(m.k==="e") es+=v; else ra+=v; }); return {es,ra,tot:es+ra}; }
+function applyPkg(P){ const t=pkgTarget(P); state={e:{},r:{},p:{}}; for(const k of ["e","r"]) for(const id in t[k]) setLeaf(k,id,t[k][id]); update(); }
+function pkgTitle(P){ return `${P.title}: n. ${nf1.format(pkgSums(P).tot/1000)} mrd €`; }
+function renderPkg(P){
+  const S=pkgSums(P), bal=-(BASE_DEF-S.tot), share=nf0.format(S.es/S.tot*100);
+  $("#pkgTitle").textContent=pkgTitle(P);
+  const li=m=>`<li><div class="r1"><span>${esc(m.t)}</span><span>${sfmt(pkgMeasureEff(m))}</span></div><div class="r2">${esc(m.why)}</div></li>`;
+  const ex=P.measures.filter(m=>m.k==="e"), rv=P.measures.filter(m=>m.k==="r");
+  const nw=t=>`<span style="white-space:nowrap">${t}</span>`;
+  $("#pkgBody").innerHTML=`
+   <p class="lead">Tämä on <b>${esc(P.name)}-tekoälyn esimerkki</b> siitä, miten Velkajarru voitaisiin saavuttaa pysyvillä toimilla. Se on yksi mahdollinen tapa, ei ainoa oikea. Kun paketti on käytössä, voit jatkaa säätämistä vapaasti.</p>
    <div class="gm-sum">
      <div><div class="k">Sopeutus yhteensä</div><div class="v">${sfmt(S.tot)}</div></div>
      <div><div class="k">Budjetin tasapaino</div><div class="v">${fmt(-BASE_DEF)} → ${bal<0?"alijäämä "+fmt(-bal):"ylijäämä "+fmt(bal)}</div></div>
-     <div><div class="k">Menosäästöt</div><div class="v">${sfmt(S.es)} <span style="white-space:nowrap">(${nf0.format(S.es/S.tot*100)} %)</span></div></div>
-     <div><div class="k">Tulojen lisäys</div><div class="v">${sfmt(S.ra)} <span style="white-space:nowrap">(${nf0.format(S.ra/S.tot*100)} %)</span></div></div>
+     <div><div class="k">Menosäästöt</div><div class="v">${sfmt(S.es)} ${nw("("+share+" %)")}</div></div>
+     <div><div class="k">Tulojen lisäys</div><div class="v">${sfmt(S.ra)} ${nw("("+nf0.format(S.ra/S.tot*100)+" %)")}</div></div>
    </div>
-   <h3>Periaatteet</h3><ul class="pr">${GROK.principles.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+   ${P.principles.length?`<h3>Periaatteet</h3><ul class="pr">${P.principles.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
    <h3>Menot: ${sfmt(S.es)}</h3><ul class="gm-list">${ex.map(li).join("")}</ul>
    <h3>Tulot ja verot: ${sfmt(S.ra)}</h3><ul class="gm-list">${rv.map(li).join("")}</ul>
-   <div class="gm-note">
-     <p><b>Rehellisesti sanottuna:</b> tämä on yksi esimerkki. Sopeutuksen kohdentaminen on aina arvovalinta: joku painottaisi enemmän menoleikkauksia, joku veroja, joku eri kohteita.</p>
-     <p>Luvut ovat staattisia arvioita. Käyttäytymis- ja kasvuvaikutuksia ei ole huomioitu: veronkorotusten todellinen tuotto voi jäädä pienemmäksi, ja leikkaukset voivat lyhyellä aikavälillä heikentää kysyntää. Monet toimet vaatisivat lakimuutoksia, ja ne toteutettaisiin vaiheittain usean vuoden aikana.</p>
-     <p>Menojen osuudeksi jäi noin ${nf0.format(S.es/S.tot*100)} %, vaikka tavoitteena oli yli puolet. Suojatut erät muodostavat valtaosan menoista: perusturva, koulutus ja tutkimus, puolustus, korot, EU-maksut ja eläkkeiden ydin. Lisäksi hyvinvointialueiden säästö pidettiin maltillisena. Osa tulopuolen toimista (energiaverotukien, alennettujen ALV-kantojen ja tuloverovähennysten karsinta) on luonteeltaan tukien karsintaa verotuksen kautta.</p>
-   </div>`;
-  const ap=grokApplied(); const b=$("#grokApply"); b.hidden=ap; $("#grokEffects").hidden=!ap;
+   ${P.notes.length?`<div class="gm-note">${P.notes.map(n=>`<p>${esc(n.replace("{menot_osuus}",share))}</p>`).join("")}</div>`:""}`;
+  const ap=pkgApplied(P); $("#pkgApply").hidden=ap; $("#pkgApply").textContent=`Ota ${P.title} käyttöön`; $("#pkgEffects").hidden=!ap;
 }
-function openGrok(){ renderGrok(); $("#grokModal").hidden=false; $("#grokModal .box").scrollTop=0; setTimeout(()=>$("#grokClose").focus(),0); }
-function closeGrok(){ $("#grokModal").hidden=true; }
-function useGrok(){
-  if(hasChanges() && !grokApplied() && !confirm("Grokin valinta korvaa nykyiset valintasi. Jatketaanko?")) return false;
-  applyGrok(); toast("Grokin valinta otettu käyttöön"); return true;
+function openPkg(id){ curPkg=PKG[id]; renderPkg(curPkg); $("#pkgModal").hidden=false; $("#pkgModal .box").scrollTop=0; setTimeout(()=>$("#pkgClose").focus(),0); }
+function closePkg(){ $("#pkgModal").hidden=true; }
+function usePkg(id){
+  const P=PKG[id]; if(!P||!P.available) return false;
+  if(hasChanges() && !pkgApplied(P) && !confirm(`${P.title} korvaa nykyiset valintasi. Jatketaanko?`)) return false;
+  applyPkg(P); toast(`${P.title} otettu käyttöön`); return true;
 }
-$("#grokBtn").addEventListener("click",()=>{ if(useGrok()) openGrok(); });
-$("#grokInfoBtn").addEventListener("click",openGrok);
-$("#grokApply").addEventListener("click",()=>{ if(useGrok()) renderGrok(); });
-$("#grokEffects").addEventListener("click",()=>{ closeGrok(); showTab("vaik"); const m=window.innerWidth<960? $("#meter").offsetHeight:0; window.scrollTo({top:$("#p-vaik").getBoundingClientRect().top+scrollY-m-70,behavior:"smooth"}); });
-$("#grokClose").addEventListener("click",closeGrok); $("#grokClose2").addEventListener("click",closeGrok);
-$("#grokModal").addEventListener("click",e=>{ if(e.target.id==="grokModal") closeGrok(); });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("#grokModal").hidden) closeGrok(); });
-Object.assign(window.__budjetti,{GROK,grokSums,grokApplied,applyGrok});
+function renderChooser(){
+  $("#aiList").innerHTML=AI_PACKAGES.map(P=>{
+    if(!P.available) return `<li class="ai-item soon" data-ai="${P.id}"><span class="ai-name">${esc(P.name)}</span><span class="ai-meta">Paketti julkaistaan myöhemmin.</span><button class="btn" type="button" disabled aria-disabled="true">tulossa</button></li>`;
+    const S=pkgSums(P); const on=pkgApplied(P);
+    return `<li class="ai-item" data-ai="${P.id}"><span class="ai-name">${esc(P.name)}</span><span class="ai-meta">${esc(P.title)}: sopeutus ${fmt(S.tot)}, menot ${nf0.format(S.es/S.tot*100)} % / tulot ${nf0.format(S.ra/S.tot*100)} %, ${P.measures.length} toimea${on?" · käytössä":""}</span>
+      <span class="ai-acts"><button class="btn primary" type="button" data-ai-use="${P.id}">${on?"Näytä":"Ota käyttöön"}</button><button class="btn" type="button" data-ai-info="${P.id}">Perustelut</button></span></li>`;
+  }).join("");
+}
+function openChooser(){ renderChooser(); $("#aiModal").hidden=false; setTimeout(()=>$("#aiClose").focus(),0); }
+function closeChooser(){ $("#aiModal").hidden=true; }
+$("#aiBtn").addEventListener("click",openChooser);
+$("#aiInfoBtn").addEventListener("click",openChooser);
+$("#aiList").addEventListener("click",e=>{
+  const u=e.target.closest("[data-ai-use]"); if(u){ if(usePkg(u.dataset.aiUse)){ closeChooser(); openPkg(u.dataset.aiUse); } return; }
+  const i=e.target.closest("[data-ai-info]"); if(i){ closeChooser(); openPkg(i.dataset.aiInfo); }
+});
+$("#aiClose").addEventListener("click",closeChooser);
+$("#aiModal").addEventListener("click",e=>{ if(e.target.id==="aiModal") closeChooser(); });
+$("#pkgApply").addEventListener("click",()=>{ if(curPkg && usePkg(curPkg.id)) renderPkg(curPkg); });
+$("#pkgEffects").addEventListener("click",()=>{ closePkg(); showTab("vaik"); const m=window.innerWidth<960? $("#meter").offsetHeight:0; window.scrollTo({top:$("#p-vaik").getBoundingClientRect().top+scrollY-m-70,behavior:"smooth"}); });
+$("#pkgClose").addEventListener("click",closePkg); $("#pkgClose2").addEventListener("click",closePkg);
+$("#pkgModal").addEventListener("click",e=>{ if(e.target.id==="pkgModal") closePkg(); });
+document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(!$("#pkgModal").hidden) closePkg(); else if(!$("#aiModal").hidden) closeChooser(); });
+Object.assign(window.__budjetti,{AI_PACKAGES,pkgSums:id=>pkgSums(PKG[id]),pkgApplied:id=>pkgApplied(PKG[id]),applyPkg:id=>applyPkg(PKG[id])});
 </script>
 </body>
 </html>
